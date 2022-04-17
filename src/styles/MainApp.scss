@@ -1,6 +1,77 @@
 // importing global rules
 @import "./global";
 
+/* Global-Google-Font */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&family=Raleway:wght@100;200;300;400;600;700;800&display=swap');
 
+/* _Global Colors_ */
+$blackMainColor: #000;
+$textColor: #fff;
+
+
+/* helpful Mixins */
+
+@mixin GridParentCentering{
+    display: grid;
+    justify-items: center;
+    align-items: center
+}
+@mixin GridSelfCenter {
+    justify-self: center;
+    align-self: center
+    
+}
+
+
+/* smaller screen  */
+.mainAppContainer{
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 65px 1fr;
+    color: #fff;
+}
+
+
+.MA_header{
+    background-color: $blackMainColor;
+    height: 65px;
+    color: inherit;
+    padding: 0px 24px;
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    grid-template-rows: 1fr;
+    grid-template-areas: "MA_logotext . MA_headerprofilebtn MA_mobileMenu";
+
+    & .MA_logoTextContainer{
+        justify-self: start;
+        font-size: 25px;
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-gap: 5px;
+        align-self: center;
+        align-items: center;
+        justify-items: center;
+
+        & .MA_logoContainer{
+            @include GridParentCentering;
+        }
+        & .MA_logoText{
+            font-weight: 700;
+        }
+    }
+
+    & .MA_mobileMenu{
+        justify-self: end;
+        border: 1px solid red;
+    }
+}
+
+
+// hiding the nav in the mobile
+.MA_nav{
+    display: none;
+    background-color: $blackMainColor;
+}
 
 

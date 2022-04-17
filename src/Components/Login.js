@@ -1,14 +1,44 @@
-import React from "react";
+import React,{useEffect} from "react";
 
 
 // importing styles
 import "../styles/login.scss"
 
 // importing helper functions
-import { loginAuth } from "../helper";
+import { 
+    loginAuth,
+    checkAuth
+ } from "../helper";
+
+
 const AuthLink = loginAuth();
-//console.log(AuthLink)
 function Login(){
+
+    //useEffect
+    useEffect(()=> {
+        const logggedIn = checkAuth();
+   
+        // if(logggedIn){
+        //     window.location.href = "/app" 
+        // }
+        // checking the url and getting the code from the link
+        const currentLoginUrl = window.location.href;
+        const splittedURL = currentLoginUrl.split("=")
+        let secondSplit;
+        if(splittedURL.length > 2){
+            secondSplit = splittedURL[1].split("&")[0]
+            console.log("secondSplit", secondSplit)
+        }
+        // if(splittedURL.length === 2){
+        //     localStorage.setItem("MusicAppLoginStatus", true)
+        //     localStorage.setItem("mucisAppUserCode", splittedURL[1])
+        // }
+
+        // redirecting to the MainApp
+        //window.location.href = "/app" 
+    }, []);
+    
+    // button auth to spotify
     function AuthLinkhandler(e){
         e.preventDefault();
         window.location.href= AuthLink

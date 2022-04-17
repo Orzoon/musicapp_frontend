@@ -1,5 +1,11 @@
+/* --Global-Google-Font-- */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&family=Raleway:wght@100;200;300;400;600&display=swap');
+
 body, *, *::after, *::before{
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
+    position: relative;
+    color: #fff;
+    font-family: 'Raleway', sans-serif;
 } 
