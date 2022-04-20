@@ -9,3 +9,6 @@ body, *, *::after, *::before{
     color: #fff;
     font-family: 'Raleway', sans-serif;
 } 
+body{
+    overflow-x: hidden;
+}

@@ -2,11 +2,19 @@
 @import "./global";
 
 /* Global-Google-Font */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&family=Raleway:wght@100;200;300;400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&family=Raleway:wght@100;200;300;400;500;600;700;800&display=swap');
 
 /* _Global Colors_ */
 $blackMainColor: #000;
 $textColor: #fff;
+$profileNavBackground:#282828;
+$profileNavDimText:  #E0E0E0; 
+$iconDimColor: #B2B2B2;
+
+/* __COMMON COLORS__SHARED */
+$OutletBackground: #121212;
+$textDescriptionColor: #A2A2A2;
+$hoverbgColor: #282828;
 
 
 /* helpful Mixins */
@@ -24,7 +32,11 @@ $textColor: #fff;
 
 
 /* smaller screen  */
-.mainAppContainer{
+// setting padding from the main container
+.MainApp_container{
+    // all devices padding
+    overflow-x: hidden;
+    min-height: 100vh;
     position: relative;
     display: grid;
     grid-template-columns: 1fr;
@@ -39,11 +51,12 @@ $textColor: #fff;
     color: inherit;
     padding: 0px 24px;
     display: grid;
-    grid-template-columns: 1fr auto auto auto;
+    grid-template-columns: 1fr auto auto 15px auto;
     grid-template-rows: 1fr;
-    grid-template-areas: "MA_logotext . MA_headerprofilebtn MA_mobileMenu";
+    grid-template-areas: "MA_logotext . MA_headerprofilebtnnav . MA_mobileMenu";
 
     & .MA_logoTextContainer{
+        grid-area: MA_logotext;
         justify-self: start;
         font-size: 25px;
         display: grid;
@@ -61,17 +74,230 @@ $textColor: #fff;
         }
     }
 
+    & .MA_headerProfileBtnNav{
+        grid-area: MA_headerprofilebtnnav;
+        align-self: center;
+        justify-self: center;
+        height: 30px;
+        width: 30px;
+        cursor: pointer;
+
+        /* Separate for Image and Icon */
+        // color: #535353;
+
+        //button
+        & .MA_headerProfileBtn{
+            height: 100%;
+            width: 100%;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            overflow: hidden;
+
+            & img{
+                height: 100%;
+                width: 100%;
+                object-fit: cover;
+            }
+        }
+
+        // ul
+        & .MA_headerProfileNav{
+            display: none;
+            position: absolute;
+            list-style-type: none;
+            top: 40px;
+            right: 0;
+            width: 196px;
+            border-radius: 5px;
+            background-color: $profileNavBackground;
+
+            & li {
+                height: 40px;
+                font-size: 13px;
+                font-weight: 600;
+                color: $profileNavDimText;
+                display: grid;
+                align-self: center;
+                padding: 12px;
+                cursor: pointer;
+            }
+        }
+    }
+
     & .MA_mobileMenu{
-        justify-self: end;
-        border: 1px solid red;
+        grid-area: MA_mobileMenu;
+        position: relative;
+        justify-self: center;
+        align-self: center;
+        height: 20px;
+        width: 28px;
+        background-color: none;
+        border: none;
+        background-color: inherit;
+
+
+        & .MA_mobileMenuLine1, .MA_mobileMenuLine2, .MA_mobileMenuLine3{
+            position: absolute;
+            height: 4px;
+            width:28px;
+            background-color: #fff;
+           border-radius: 1px;
+        }
+
+        & .MA_mobileMenuLine1{
+            top: 0;
+            left: 0;
+        }
+
+        & .MA_mobileMenuLine2{
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        & .MA_mobileMenuLine3{
+            bottom: 0;
+            left: 0;
+        }
+
+        &:hover{
+            cursor: pointer;
+        }
+
     }
 }
 
 
+.navOpen{
+    right: 0px;
+}
+
+.navClose{
+    right: -250px;
+}
 // hiding the nav in the mobile
 .MA_nav{
-    display: none;
+    //border: 1px solid green;
+    z-index: 99;
+    position: fixed;
+    min-height: 500px;
+    height: 100%;
+    top: 65px;
+    background: #fff;
+    //display: none;
+    min-height: 100vh;
+    width: 200px;
     background-color: $blackMainColor;
+    padding: 0px 24px;
+    padding-top: 20px;
+    transition: right 0.3s ease-out;
+    & ul.MA_navTop {
+        height: auto;
+        width: 100%;
+        list-style-type: none;
+
+        & li {
+            justify-content: start;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-gap: 15px;
+            align-items: center;
+            height: 40px;
+            cursor: pointer;
+
+            & div {
+                align-self: center;
+                display: grid;
+                align-items: center;
+                height: 100%;
+                margin: 0px;
+                font-size: 24px;
+                & svg {
+                    fill: $iconDimColor;
+                }
+            }
+
+            & a {
+                justify-self: start;
+                font-size: 12px;
+                font-weight: 800;
+                color: $iconDimColor;
+                text-decoration: none;
+            }
+            // heart icon
+            & div.MA_navHeartIcon{
+                font-size: 12px;
+                height: 25px;
+                width: 25px;
+                //border: 1px solid red;
+                @include GridParentCentering;
+                background: linear-gradient(to bottom right, #462FA6, #798C9A)
+            }
+            
+        }
+
+        & li.MA_navTopPlaylist_gap{
+            // matching with the bot gap
+            height: 30px;
+        }
+    }
+
+    & ul.MA_navBot{
+        position: relative;
+        margin-top: 30px;
+        height: auto;
+        list-style-type: none;
+
+        & li {
+            height: 30px;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 400;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            cursor: pointer;
+            color: $profileNavDimText;
+
+            & a {
+                color: $profileNavDimText;
+                text-decoration: none;
+            }
+        }
+    }
 }
+
+
+
+// --> control this later on with chilld contianers
+.MA_outletContainer{
+    width: 100%;
+    height: auot;
+    //padding: 30px 10px;
+    background-color: $OutletBackground;
+}
+
+
+
+
+// padding: 30px 24px;
+@media only screen and (min-width: 420px){
+    .MA_outletContainer{
+        //padding: 30px 24px;
+    }
+    
+}
+
+@media only screen and (min-width: 480px){
+
+}
+// @media only
+
+// 576
+//768
+//992
+//1200
+//1400
 
 
