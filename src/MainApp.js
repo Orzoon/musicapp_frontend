@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useReducer, useRef} from "react";
 import { Link, Outlet } from "react-router-dom";
-import SpotifyWebApi from "spotify-web-api-js";
+//import SpotifyWebApi from "spotify-web-api-js";
 import appReducer, {InitialState} from "./appReducer";
 // context
+import { spotifyApi } from "./helper";
 import { AppContext } from "./context";
 import NavPlaylist from "./subComponents/navPlaylist";
 // icons
@@ -15,8 +16,8 @@ import {BiLibrary} from "react-icons/bi";
 // importing the styles
 import "./styles/MainApp.scss";
 
-const _token = "BQCq7oxi4t17v7N0BXTsu2wyrxSM6FHgADZfXaATvl2YcIb_Xsu7kcAEA1P_buHZEguU5BENwQ4rooj-HPG3gkEBUl0T3dIyAOK3zpzeExGwWnhf56YG_oQ43o8UnTyewrucwkPX8w5cwNZ5KHwCG_jfEdE63kG5k9B9iqTCeQSz7WFNpvNub5rxmwdKKys7KO2FQHxZU1N0BQnZmFeZGdAoiudMY47etDZ7-dG2KAEV2g4k1ywr_PQnSnvx6HmfNzVmoiWMaQ";
-const spotifyApi = new SpotifyWebApi();
+const _token = "BQDR393RwdnYZ4QVPrngc3c7fLOwTn8IlCLmvbGcLjCMZP-OjkSl9ZirLGFFa4znavtbhzwgWEwl0UDA-CnJqXiJpsrKB6SwqLSarEwcm7BdygKRlslE3sMAvxURpPVPZUvPuUZR6HM-g5WmgzhDOIpTlAqm8T3OGGN_Q6renK9mRl-45Hmi-x0QIOWGeB5z3r4sGwA34gYmPG5UwWb0OfkIOGU1f0fmyedk7vcMrqXlN61yS-m1-On2qFR-Ok8LejIHU46ydLhGVImsVcZfW5l8MQzdb2M";
+
 
 export default function MainApp(){
     const navRef = useRef(null);
@@ -235,6 +236,7 @@ export default function MainApp(){
                     <AppContext.Provider value ={{
                         user,
                         home,
+                        playlists,
                         dispatch
                         }}>
                         <Outlet/>
@@ -243,4 +245,10 @@ export default function MainApp(){
         </div>
         
     )
+}
+
+
+
+export {
+    spotifyApi
 }

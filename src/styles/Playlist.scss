@@ -20,10 +20,12 @@ $SpotifyGreen: #1ed760;
 .PL_mainContainer{
     /* NOTE --Padding in the child Components instead */
     //padding: 30px 10px;
+    padding-bottom: 50px;
     color: #fff;
     background-color: $OutletBackground;
     display: grid;
-    border: 1px solid red;
+    overflow: hidden;
+    //border: 1px solid red;
 
     // grid --> top display
     // -- UL
@@ -33,11 +35,11 @@ $SpotifyGreen: #1ed760;
 }
 
 /* padding */
-.PL_topMainContainer, .PL_PlaylistsDIV{
+.PL_topMainContainer, .PL_playlistsDIV{
     padding: 30px 10px;
 }
 //fix;
-.PL_PlaylistsDIV, .PL_mainPlayButtonCont{
+.PL_playlistsDIV, .PL_mainPlayButtonCont{
     padding: 0px 10px;
 }
 
@@ -53,6 +55,26 @@ $SpotifyGreen: #1ed760;
         width: 150px;
         background: #000;
         border-radius: 5px;
+        /* IF IMAGE */
+        & img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+         /* IF NO - IMAGE */
+         & div {
+             height: 100%;
+             width: 100%;
+             display: grid;
+             justify-items: center;
+             align-items: center;
+             font-size: 50px;
+             background-color: #282828;
+            & svg {
+                fill: $textDescriptionColor;
+            }
+         }
     }
 
      /* Playlist description */
@@ -96,6 +118,7 @@ div.PL_mainPlayButtonCont{
     width: 100%;
     background: $OutletBackground;
     height: 80px;
+    border-bottom: .5px solid rgb(63, 48, 48);
     @include CenteringLeft;
 
     & button{
@@ -115,17 +138,605 @@ div.PL_mainPlayButtonCont{
 }
 
 
+div.PL_playlistsDIV{
+    /* list of albums */
+    /* search option */
+    padding-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-auto-rows: auto;
+    height: auto;
+    color: #fff;
+
+    & div.PL_playlistSearch{
+        height: auto;
+        display: grid;
+        grid-template-columns: 1fr 50px;
+        grid-template-rows: auto 40px;
+        grid-row-gap: 12px;
+        grid-template-areas: "PL_para PL_btn"
+                             "PL_search PL_btn";
+
+
+
+        /* SEARCH FROM OR FIND MORE BTN */
+        & button.PL_playlistFindMoreBtn{
+            align-self: end;
+            justify-self: end;
+            grid-area: 1/1/3/3;
+            color: #fff;
+            text-transform: uppercase;
+            background-color: inherit;
+            width: auto;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            padding: 0px;
+            height: 22px;
+        }
+
+        /* SEARCH FORM */
+        & p {
+            grid-area: PL_para;
+            align-self: bottom;
+            font-weight: 600;
+            font-size: 22px;
+            padding: 0px;
+        }
+
+        & button.PL_playlistSearchCloseBtn{
+            background: none;
+            grid-area: PL_btn;
+            height: 50px;
+            width: 50px;
+            border: none;
+            color: $textDescriptionColor;
+            & svg{
+                fill:$textDescriptionColor;
+            }
+        }
+
+        & form.PL_playlistSearchForm{
+            grid-area: "PL_search";
+            height: auto;
+            width: 100%;
+
+            & ul.PL_playlistSFUL{
+                border-radius: 4px;
+                padding: 8px 9px;
+                background-color: #2D2D2D;
+                width: 100%;
+                height: 100%;
+                display: grid;
+                grid-template-columns: auto 1fr auto;
+                grid-template-rows: 1fr;
+                list-style-type: none;
+                align-items: center;
+                max-width: 360px;
+                grid-column-gap: 8px;
+
+
+                & li{
+                    font-size: 14px;
+                    color: $textDescriptionColor;
+                }
+                & li input{
+                    width: 100%;
+                    height: 100%;
+                    color: #000;
+                    background-color: inherit;
+                    border: none;
+                    padding: 0px;
+                    font-weight: 600;
+                    font-size: 14px;
+                    color: $textDescriptionColor;
+
+                    &:focus{
+                        outline: none;
+                    }
+                }
+
+                & li button{
+                    padding: 0px;
+                    background: inherit;
+                    color: $textDescriptionColor;
+                    font-size: 14px;
+                    outline: none;
+                    border: none;
+                }
+                & li button svg, & li svg{
+                    fill: $textDescriptionColor;
+                }
+            }
+        }
+    }
+}
+
+/* PLAYLIST FIX IF ALBUM EXISTS */
+.PL_playlistSearchFIX{
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+
+/* NESTESD ULS */
+div.PL_playlistsDIV ul.PL_playListsULROW{
+    width: 100%;
+    height: auto;    
+    list-style-type: none;
+    padding: 0px;
+    &:hover {
+       
+    }
+    /* PL_playListLROW */
+    & li.PL_playListLROW{
+        width: 100%;
+
+        /*----------*/
+        /*COLUMN UL*/
+        /*----------*/
+       & ul.PL_playListULColumn{
+        //padding: 10px 16px;
+        padding: 10px 10px;
+        position: relative;
+        list-style-type: none;
+        width: 100%;
+        display: grid;
+        grid-column-gap: 16px;
+        /* Image(Playbtn), SongName/artistName-like-option */
+        grid-template-columns: auto 1fr auto auto;
+        grid-auto-rows: 40px;
+    
+        & li {
+            height: 100%;
+        }
+
+        /* NUMBER */
+        & li.PL_ULC_1{
+            display: none;
+
+        }
+
+        /* PlayBTN */
+        & li.PL_ULC_2{
+            z-index: 9;
+            //PL_ULC_7PlayBtn
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            // padding + imageCOontMid 10+30
+            left: 20px;
+            height: 20px;
+            & button.PL_ULC_7PlayBtn{
+                background: none;
+                border: none;
+                font-size: 16px;
+                & svg {
+                    fill: $textDescriptionColor;
+                }
+            }
+        }
+
+        /* SIDEICON-MUSIC?PODCAST */
+        & li.PL_ULC_3{
+            display: none;
+        }
+
+        /*ALBUM IMAGE-COVER*/
+        & li.PL_ULC_4{
+            height: 40px;
+            width: 40px;
+
+            & img{
+                height: 100%;
+                width: 100%;
+                object-fit: cover;
+            }
+        }
+        /* SONG NAME */
+        & li.PL_ULC_5{
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto;
+            align-content: center;
+            & h3 {
+                width: 100%;
+                font-size: 16px;
+                font-weight: 600;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+
+
+            & div {
+                width: 100%;
+                display: inline;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+                & a {  
+                    text-decoration: none;    
+                    width: 100%;      
+                    display: inline;
+                    font-weight: 400;
+                    font-size: 13px;
+                    color: $textDescriptionColor;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+
+                    &:hover > span{
+                        color: #fff;
+                        text-decoration: underline;
+                    }
+                    & span {
+                        color: inherit;
+                        text-decoration: none;
+                    }
+        
+                }
+            }
+        }
+       
+        /* ALBUM OR PODCAST */
+        & li.PL_ULC_6{
+            display: none;
+        }
+        /* LIKE OR NOT */
+        & li.PL_ULC_7{
+            align-self: center;
+            display: grid;
+            align-items: center;
+            
+            & button.PL_ULC_7LikeBtn{
+                background: none;
+                border: none;
+                font-size: 16px;
+                & svg {
+                    //fill: $SpotifyGreen;
+                }
+            }
+        }
+        /* Length */
+        & li.PL_ULC_8{
+            display: none;
+        }
+        /* MORE OPTION BUTTON */
+        & li.PL_ULC_9{
+            align-self: center;
+            display: grid;
+            align-items: center;
+            
+            & button.PL_ULC_7OptionBtn{
+                background: none;
+                border: none;
+                font-size: 16px;
+                & svg {
+                    fill: $textDescriptionColor;
+                }
+            }
+        }
+
+        
+        & li.PL_ULC_10{
+            grid-area: 1/3/1/6;
+            //background-color: red;
+            height: 100%;
+            width: 100%;
+            
+            & button {
+                padding: 7px 15px;
+                border: 0.5px solid rgb(163, 162, 162);
+                background-color: inherit;
+                color: #fff;
+                border-radius: 15px;
+                font-size: 14px;
+                font-weight: 700;
+            }
+        }
+        
+       }
+
+    }
+}
+//---> More option btn
+li.PL_ULC_9{
+    position: relative;
+
+    & ul.PL_ULC_9UL{
+        position: absolute;
+        display: grid;
+        grid-template-columns:1fr;
+        grid-auto-rows: auto;
+        top: 80%;
+        right: 15px;
+        background: #282828;
+        z-index: 9;
+        padding: 4px;
+        border-radius: 4px;
+        & li {
+
+            &:hover{
+                background-color: rgb(59, 58, 58);
+            }
+            list-style-type: none;
+            height: 43px;
+            width: 200px;
+            border-radius: 4px;
+            overflow: hidden;
+            & button {
+                width: 100%;
+                height: 100%;
+                padding: 12px 12px 12px 12px;
+                background-color: inherit;
+                border: none;
+                font-size: 14px;
+                font-weight: 600;
+                color: #EAEAEA;
+                text-align: start;
+                //white-space: nowrap;
+                
+            }
+        }
+
+        & li.PL_ULC_9UL_CopyLink{
+            border-top: 0.2px solid rgb(75, 72, 72);
+        }
+    }
+
+}
 
 // padding: 30px 24px;
 @media only screen and (min-width: 420px){
     .PL_topMainContainer, .PL_PlaylistsDIV{
         padding: 30px 24px;
     }
+
+    .PL_playlistsDIV, .PL_mainPlayButtonCont{
+        padding: 0px 24px;
+    }
+
+
+
+    /* NESTESD ULS */
+    div.PL_playlistsDIV ul.PL_playListsULROW{
+        &:hover {
+        
+        }
+        /* PL_playListLROW */
+        & li.PL_playListLROW{
+            /*----------*/
+            /*COLUMN UL*/
+            /*----------*/
+        & ul.PL_playListULColumn{
+            display: grid;
+            grid-column-gap: 16px;
+            /* ADDING SONGS TIME LENGTH */
+            /* Image(Playbtn), SongName/artistName-like-option */
+            grid-template-columns: auto 1fr auto auto auto;
+            grid-auto-rows: 40px;
+        
+
+            & li {
+                height: 100%;
+                font-size: 16px;
+                font-weight: 500;
+                color: $textDescriptionColor;
+            }
+
+            /* NUMBER */
+            & li.PL_ULC_1{
+                display: none;
+
+            }
+
+            /* PlayBTN */
+            & li.PL_ULC_2{
+            }
+
+            /* SIDEICON-MUSIC?PODCAST */
+            & li.PL_ULC_3{
+                display: none;
+            }
+
+            /*ALBUM IMAGE-COVER*/
+            & li.PL_ULC_4{
+
+            }
+            /* SONG NAME */
+            & li.PL_ULC_5{
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+                align-content: center;
+                & h3 {
+                }
+                & div {
+                    & a {      
+                    }
+                }
+            }
+            /* ADDING ALBUM OR PODCAST */
+            /* ALBUM OR PODCAST */
+            & li.PL_ULC_6{
+                display: none;
+            }
+            /* LIKE OR NOT */
+            & li.PL_ULC_7{
+                & button.PL_ULC_7LikeBtn{
+                    & svg {
+                    }
+                }
+            }
+            /* Length */
+            & li.PL_ULC_8{
+                display: grid;
+                align-items: center;
+                height: 35px;
+            }
+            /* MORE OPTION BUTTON */
+            & li.PL_ULC_9{
+                align-self: center;
+                display: grid;
+                align-items: center;
+                
+                & button.PL_ULC_7OptionBtn{
+                    background: none;
+                    border: none;
+                    font-size: 16px;
+                    & svg {
+                        fill: $textDescriptionColor;
+                    }
+                }
+            }
+
+            & li.PL_ULC_10{
+                grid-area: 1/4/1/7;
+                //background-color: red;
+                height: 100%;
+                width: 100%;
+                
+                & button {
+                    padding: 7px 15px;
+                    border: 0.5px solid rgb(163, 162, 162);
+                    background-color: inherit;
+                    color: #fff;
+                    border-radius: 15px;
+                    font-size: 14px;
+                    font-weight: 700;
+                }
+            }
+
+            
+        }
+
+        }
+    }
     
 }
 
-@media only screen and (min-width: 480px){
-
+@media only screen and (min-width: 576px){
+        /* NESTESD ULS */
+        div.PL_playlistsDIV ul.PL_playListsULROW{
+            align-items: center;
+            min-height: 0px;
+            min-width: 0px;
+            &:hover {
+            
+            }
+            /* PL_playListLROW */
+            & li.PL_playListLROW{
+                /*----------*/
+                /*COLUMN UL*/
+                /*----------*/
+            & ul.PL_playListULColumn{
+                display: grid;
+                grid-column-gap: 16px;
+                /* ADDING SONGS TIME LENGTH */
+                 /* ADDING ALBUM OR PODCAST */
+                /* Image(Playbtn), SongName/artistName-like-option */
+                grid-template-columns: auto 1fr 140px auto auto auto;
+                grid-auto-rows: 40px;
+            
+    
+                & li {
+                    height: 100%;
+                    font-size: 16px;
+                    font-weight: 500;
+                    color: $textDescriptionColor;
+                }
+    
+                /* NUMBER */
+                & li.PL_ULC_1{
+                    display: none;
+    
+                }
+    
+                /* PlayBTN */
+                & li.PL_ULC_2{
+                }
+    
+                /* SIDEICON-MUSIC?PODCAST */
+                & li.PL_ULC_3{
+                    display: none;
+                }
+    
+                /*ALBUM IMAGE-COVER*/
+                & li.PL_ULC_4{
+    
+                }
+                /* SONG NAME */
+                & li.PL_ULC_5{
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    grid-template-rows: auto auto;
+                    align-content: center;
+                    & h3 {
+                    }
+                    & div {
+                        & a {  
+                            font-size: 14px; 
+                            font-weight: 600; 
+                        }
+                    }
+                }
+            
+                /* ALBUM OR PODCAST */
+                & li.PL_ULC_6{
+                    display: grid;
+                    width: 100%;
+                    align-items: center;
+                    & h3 {
+                        /* same as Artists names */
+                        font-size: 14px; 
+                        font-weight: 600;
+                        color: $textDescriptionColor;
+                        width: 100%;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                }
+                /* LIKE OR NOT */
+                & li.PL_ULC_7{
+                    & button.PL_ULC_7LikeBtn{
+                        & svg {
+                        }
+                    }
+                }
+                /* Length */
+                & li.PL_ULC_8{
+                    display: grid;
+                    align-items: center;
+                    height: 35px;
+                    font-size: 14px; 
+                    font-weight: 600;
+                }
+                /* MORE OPTION BUTTON */
+                & li.PL_ULC_9{
+                    align-self: center;
+                    display: grid;
+                    align-items: center;
+                    
+                    & button.PL_ULC_7OptionBtn{
+                        background: none;
+                        border: none;
+                        font-size: 16px;
+                        & svg {
+                            fill: $textDescriptionColor;
+                        }
+                    }
+                }
+    
+                
+            }
+    
+            }
+        }
 }
 
 
