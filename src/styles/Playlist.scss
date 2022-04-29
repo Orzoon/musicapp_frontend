@@ -137,7 +137,6 @@ div.PL_mainPlayButtonCont{
     }
 }
 
-
 div.PL_playlistsDIV{
     /* list of albums */
     /* search option */
@@ -150,6 +149,7 @@ div.PL_playlistsDIV{
     color: #fff;
 
     & div.PL_playlistSearch{
+        padding-bottom: 40px;
         height: auto;
         display: grid;
         grid-template-columns: 1fr 50px;
@@ -256,9 +256,39 @@ div.PL_playlistsDIV{
 /* PLAYLIST FIX IF ALBUM EXISTS */
 .PL_playlistSearchFIX{
     padding-top: 40px;
-    padding-bottom: 40px;
 }
 
+
+/* UL LIST HEADING-ROW */
+div.PL_playlistsDIV ul.PL_playListsULROWHeading{
+    padding: 5px 10px;
+    list-style-type: none;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-column-gap: 16px;
+    margin-bottom: 10px;
+    border-bottom: 0.2px solid rgba(255,255,255,0.2);
+    align-items: center;
+    li{
+        text-transform: uppercase;
+        font-size: 13px;
+        font-weight: 500;
+        color: $textDescriptionColor;
+    }
+
+    & li.PL_HL1{
+        display: none;
+    }
+    & li.PL_HL2{
+    }
+    & li.PL_HL3{
+        display: none;
+    }
+    & li.PL_HL4{
+        display: none;
+    }
+}
 
 /* NESTESD ULS */
 div.PL_playlistsDIV ul.PL_playListsULROW{
@@ -501,7 +531,30 @@ li.PL_ULC_9{
     }
 
 
+    /* UL LIST HEADING-ROW */
+    div.PL_playlistsDIV ul.PL_playListsULROWHeading{
+        display: grid;
+        grid-template-columns: 1fr 60px;
+        grid-column-gap: 16px;
+        li{
+        }
 
+        & li.PL_HL1{
+            display: none;
+        }
+        & li.PL_HL2{
+        }
+        & li.PL_HL3{
+            display: none;
+        }
+        & li.PL_HL4{
+            display: block;
+            font-size: 16px;
+            & svg {
+                fill: $textDescriptionColor;
+            }
+        }
+    }
     /* NESTESD ULS */
     div.PL_playlistsDIV ul.PL_playListsULROW{
         &:hover {
@@ -620,6 +673,30 @@ li.PL_ULC_9{
 }
 
 @media only screen and (min-width: 576px){
+        /* UL LIST HEADING-ROW */
+        div.PL_playlistsDIV ul.PL_playListsULROWHeading{
+            display: grid;
+            grid-template-columns: 1fr 140px 60px;
+            grid-column-gap: 16px;
+            li{
+            }
+    
+            & li.PL_HL1{
+                display: none;
+            }
+            & li.PL_HL2{
+            }
+            & li.PL_HL3{
+                display: block;
+            }
+            & li.PL_HL4{
+                display: block;
+                font-size: 16px;
+                & svg {
+                    fill: $textDescriptionColor;
+                }
+            }
+        }
         /* NESTESD ULS */
         div.PL_playlistsDIV ul.PL_playListsULROW{
             align-items: center;

@@ -7,9 +7,6 @@ import { CommonHomeCard } from "../subComponents/subHome";
 // importing stylesheet
 import "../styles/Home.scss"
 
-
-
-
 export default function Home(){
     const {home: homeData} = useContext(AppContext)
     return(

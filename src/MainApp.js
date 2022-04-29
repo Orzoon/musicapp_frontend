@@ -6,6 +6,7 @@ import appReducer, {InitialState} from "./appReducer";
 import { spotifyApi } from "./helper";
 import { AppContext } from "./context";
 import NavPlaylist from "./subComponents/navPlaylist";
+import MusicPlayer from "./Components/MusicPlayer";
 // icons
 import {FaSpotify} from "react-icons/fa"
 import{FaHome} from "react-icons/fa"
@@ -16,7 +17,7 @@ import {BiLibrary} from "react-icons/bi";
 // importing the styles
 import "./styles/MainApp.scss";
 
-const _token = "BQDR393RwdnYZ4QVPrngc3c7fLOwTn8IlCLmvbGcLjCMZP-OjkSl9ZirLGFFa4znavtbhzwgWEwl0UDA-CnJqXiJpsrKB6SwqLSarEwcm7BdygKRlslE3sMAvxURpPVPZUvPuUZR6HM-g5WmgzhDOIpTlAqm8T3OGGN_Q6renK9mRl-45Hmi-x0QIOWGeB5z3r4sGwA34gYmPG5UwWb0OfkIOGU1f0fmyedk7vcMrqXlN61yS-m1-On2qFR-Ok8LejIHU46ydLhGVImsVcZfW5l8MQzdb2M";
+const _token = "BQDN-H0rRTy76ziTaUGSdRxwpS-8IlK6Q37TPCPQV_M_w8vwVx4TNWzXVwcB-NOsAm6GdU3EMrYNF4QVTZbgKDLa3PSqlWVOAGiy2UQKibFcZGQ7Juxdce4YJWcqKU5yOQW0z3Nsof22WzEnksqVJJmofp5XWtduZyAZrDJD1w6k34plscHe5DNa_9irKY1Pu4ntlL5HyCJvDvzvOTgL_f5-5aZxbFU03XD-O7ZpexcUlQ7Cy1-9DE5JGQqUDiM-jTHiSPq1O8VRMAW3DiIgAaPkayjrOpKPa2UyC3cy79Y";
 
 
 export default function MainApp(){
@@ -25,11 +26,12 @@ export default function MainApp(){
     const [{
         user,
         home,
-        playlists
+        playlists, 
+        musicPlayer
     }, dispatch] = useReducer(appReducer, InitialState);
 
     const [token, setToken] = useState(null);
-    const [navOpen, setNavOpen] = useState(false)
+    const [navOpen, setNavOpen] = useState(false);
     useEffect(() => {
 
         //closing the nav on the click
@@ -124,8 +126,9 @@ export default function MainApp(){
         }
     },  [token])
 
-
     // outsideClick
+    //--> NOTE
+    /*shift this to nav*/
     useEffect(() => {
         document.addEventListener("click", navOutSideClickHandler)
         return () => document.removeEventListener("click", navOutSideClickHandler)
@@ -141,7 +144,6 @@ export default function MainApp(){
         e.preventDefault();
         setNavOpen(true)
     }   
-
 
     return( 
 
@@ -230,18 +232,24 @@ export default function MainApp(){
 
                 </nav>
 
-            
+        
+                <AppContext.Provider value ={{
+                    user,
+                    home,
+                    playlists,
+                    musicPlayer,
+                    dispatch
+                    }}> 
+
                 {/* OUTLET */}
                 <div className = "MA_outletContainer">
-                    <AppContext.Provider value ={{
-                        user,
-                        home,
-                        playlists,
-                        dispatch
-                        }}>
                         <Outlet/>
-                    </AppContext.Provider>
                 </div>
+
+
+                {/* FOOTER-- MUSIC PLAYER */}
+                <MusicPlayer token = {token}/>
+                </AppContext.Provider>                
         </div>
         
     )

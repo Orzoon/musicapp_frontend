@@ -33,7 +33,23 @@ function usePlaylistFindMore(){
       onFindMoreFormChangeHandler}
 }
 
+function useWindowWidthResize(){
+    const [windowWidth, setWindowWidth] = useState(null)
 
+
+
+    useEffect(() => {
+     
+        window.addEventListener('resize', serWidthHandler)  
+        return null
+    })
+
+
+    function serWidthHandler(){
+        setWindowWidth(window.innerWidth)
+    }
+    return {}
+}
 /* Exporting Hooks */
 export {
     usePlaylistFindMore

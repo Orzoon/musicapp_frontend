@@ -3,7 +3,8 @@ const InitialState = {
     home: [],
     search: {},
     likedSongs: {},
-    playlists: []
+    playlists: [],
+    musicPlayer: null
 }
 
 export default function appReducer(state, action){
@@ -49,6 +50,11 @@ export default function appReducer(state, action){
             return {
                 ...state,
                 playlists: action.payload
+            }
+        case "SET_MUSICPLAYER":
+            return {
+                ...state,
+                musicPlayer: action.payload
             }
         default: 
         return state

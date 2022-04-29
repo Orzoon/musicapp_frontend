@@ -104,7 +104,8 @@ export function PlaylistSongsList(props){
         searchSectionBool,
         addTrackToPlaylistHandler,
         index,
-        removeTrackFromPlaylistHandler
+        removeTrackFromPlaylistHandler,
+        musicDispatchHandler
     } = props;
     const [dropDownBool, setDropDownBool] = useState(false);
     const [liked, setLiked] = useState(null)
@@ -165,7 +166,12 @@ export function PlaylistSongsList(props){
                 <li className = "PL_ULC_1">1</li>
                 {/* PlayBTN */}
                 <li className = "PL_ULC_2">
-                    <button className="PL_ULC_7PlayBtn">
+                    <button 
+                        className="PL_ULC_7PlayBtn"
+                        onClick={(e) => {
+                            /* iimage name and artists later on */
+                                musicDispatchHandler(track.uri,"play")                         
+                            }}>
                         <FaPlay/>
                     </button>
                 </li>
