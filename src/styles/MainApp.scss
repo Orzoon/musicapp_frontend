@@ -42,8 +42,8 @@ $hoverbgColor: #282828;
     grid-template-columns: 1fr;
     grid-template-rows: 65px 1fr;
     color: #fff;
+    //overflow: hidden;
 }
-
 
 .MA_header{
     background-color: $blackMainColor;
@@ -94,11 +94,25 @@ $hoverbgColor: #282828;
             cursor: pointer;
             overflow: hidden;
 
-            & img{
+            & div.MA_headerProfileBtnIMGCON{
                 height: 100%;
                 width: 100%;
-                object-fit: cover;
+                & img{
+                    height: 100%;
+                    width: 100%;
+                    object-fit: cover;
+                }
             }
+
+            & div.MA_headerProfileBtnNMCON{
+              display: none;  
+            }
+
+            & div.MA_headerProfileBtnIIconCON{
+                display: none;
+            }
+
+
         }
 
         // ul
@@ -168,7 +182,6 @@ $hoverbgColor: #282828;
     }
 }
 
-
 .navOpen{
     right: 0px;
 }
@@ -177,21 +190,20 @@ $hoverbgColor: #282828;
     right: -250px;
 }
 // hiding the nav in the mobile
-.MA_nav{
+.navCommon{
     //border: 1px solid green;
-    z-index: 99;
-    position: fixed;
     min-height: 500px;
     height: 100%;
-    top: 65px;
-    background: #fff;
+   //background: #fff;
     //display: none;
-    min-height: 100vh;
+    min-height: 100%;
     width: 200px;
     background-color: $blackMainColor;
     padding: 0px 24px;
     padding-top: 20px;
     transition: right 0.3s ease-out;
+    //overflow-y: auto;
+    overflow: hidden;
     & ul.MA_navTop {
         height: auto;
         width: 100%;
@@ -206,6 +218,10 @@ $hoverbgColor: #282828;
             height: 40px;
             cursor: pointer;
 
+            &:hover > div svg, &:hover > a {
+                fill: #fff;
+                color: #fff;
+            }
             & div {
                 align-self: center;
                 display: grid;
@@ -227,14 +243,38 @@ $hoverbgColor: #282828;
             }
             // heart icon
             & div.MA_navHeartIcon{
+                border-radius: 2px;
                 font-size: 12px;
                 height: 25px;
                 width: 25px;
                 //border: 1px solid red;
                 @include GridParentCentering;
-                background: linear-gradient(to bottom right, #462FA6, #798C9A)
+                background: linear-gradient(to bottom right, #462FA6, #798C9A);
+
             }
-            
+
+            & div.MA_navPLusIcon{
+                border-radius: 2px;
+                font-size: 12px;
+                height: 25px;
+                width: 25px;
+                //border: 1px solid red;
+                @include GridParentCentering;
+                background: $iconDimColor;
+
+                & svg {
+                    fill: #000;
+                }
+
+                &:hover > svg {
+                    fill: #000;
+                }
+
+                &:hover {
+                    background: #fff;
+                    transition: 0.2s ease-in;
+                }
+            }
         }
 
         & li.MA_navTopPlaylist_gap{
@@ -259,12 +299,45 @@ $hoverbgColor: #282828;
             overflow: hidden;
             cursor: pointer;
             color: $profileNavDimText;
-
+            &:hover > a  {
+                color: #fff;
+            }
             & a {
                 color: $profileNavDimText;
                 text-decoration: none;
             }
         }
+    }
+}
+
+.MA_nav{
+    top: 0px;
+    position: fixed;
+    z-index: 99;
+
+    & div.MA_navTopDiv{
+        padding-bottom: 0px;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 50px 10px;
+
+      & button {
+          height: 100%;
+          background: $blackMainColor;
+          border: none;
+      }
+
+      & button.MA_navCloseBtn{
+        justify-self: end;
+        background: $blackMainColor;
+        width: 50px;
+        font-size: 38px;
+        border: none;
+        cursor: pointer;
+        & svg {
+            fill: #fff;
+        }
+      }
     }
 }
 
@@ -275,7 +348,8 @@ $hoverbgColor: #282828;
     width: 100%;
     height: auot;
     //padding: 30px 10px;
-    background-color: $OutletBackground;
+    //background-color: $OutletBackground;
+    background: linear-gradient(to bottom, #212121,5%,#121212)
 }
 
 
@@ -289,7 +363,536 @@ $hoverbgColor: #282828;
     
 }
 
+// empty
 @media only screen and (min-width: 480px){
+
+}
+//changing the heading
+@media only screen and (min-width: 576px){
+    .MA_header{
+        background-color: $blackMainColor;
+        height: 65px;
+        color: inherit;
+        padding: 0px 24px;
+        display: grid;
+        grid-template-columns: 1fr auto auto 15px auto;
+        grid-template-rows: 1fr;
+        grid-template-areas: "MA_logotext . MA_headerprofilebtnnav . MA_mobileMenu";
+    
+        & .MA_logoTextContainer{
+            grid-area: MA_logotext;
+            justify-self: start;
+            font-size: 25px;
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-gap: 5px;
+            align-self: center;
+            align-items: center;
+            justify-items: center;
+    
+            & .MA_logoContainer{
+                @include GridParentCentering;
+            }
+            & .MA_logoText{
+                font-weight: 700;
+            }
+        }
+    
+        & .MA_headerProfileBtnNav{
+            grid-area: MA_headerprofilebtnnav;
+            align-self: center;
+            justify-self: end;
+            height: auto;
+            width: auto;
+            cursor: pointer;
+            //border: 1px solid green;
+    
+            /* Separate for Image and Icon */
+            // color: #535353;
+    
+            //button
+            & .MA_headerProfileBtn{
+                //border: 1px solid red;
+                height: auto;
+                width: auto;
+                cursor: pointer;
+                overflow: hidden;
+                display: grid;
+                border-radius: none;
+                border-radius: 0px;
+                grid-template-columns: 30px auto auto;
+                grid-template-rows: 30px;
+                background: inherit;
+                align-items: center;
+                grid-column-gap: 8px;
+    
+                & div.MA_headerProfileBtnIMGCON{
+                    border-radius: 50%;
+                    height: 30px;
+                    width: 30px;
+                    overflow: hidden;
+                    & img{
+                        height: 100%;
+                        width: 100%;
+                        object-fit: cover;
+                    }
+                }
+                
+
+                & div.MA_headerProfileBtnNMCON {
+                    max-width: 150px;
+                    display: grid;
+                    
+                    & h1 {
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: #fff;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+
+                    }
+                }
+    
+                & div.MA_headerProfileBtnIIconCON{
+                    display: grid;
+
+                    & svg {
+                        font-size: 18px;
+                    }
+                }
+    
+                
+            }
+    
+            // ul
+            & .MA_headerProfileNav{
+                display: none;
+                position: absolute;
+                list-style-type: none;
+                top: 40px;
+                right: 0;
+                width: 196px;
+                border-radius: 5px;
+                background-color: $profileNavBackground;
+    
+                & li {
+                    height: 40px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: $profileNavDimText;
+                    display: grid;
+                    align-self: center;
+                    padding: 12px;
+                    cursor: pointer;
+                }
+            }
+        }
+    
+        & .MA_mobileMenu{
+            grid-area: MA_mobileMenu;
+            position: relative;
+            justify-self: center;
+            align-self: center;
+            height: 20px;
+            width: 28px;
+            background-color: none;
+            border: none;
+            background-color: inherit;
+    
+    
+            & .MA_mobileMenuLine1, .MA_mobileMenuLine2, .MA_mobileMenuLine3{
+                position: absolute;
+                height: 4px;
+                width:28px;
+                background-color: #fff;
+               border-radius: 1px;
+            }
+    
+            & .MA_mobileMenuLine1{
+                top: 0;
+                left: 0;
+            }
+    
+            & .MA_mobileMenuLine2{
+                top: 50%;
+                left: 0;
+                transform: translateY(-50%);
+            }
+    
+            & .MA_mobileMenuLine3{
+                bottom: 0;
+                left: 0;
+            }
+    
+            &:hover{
+                cursor: pointer;
+            }
+    
+        }
+    }
+}
+
+/* SIZE FOR THE MAIN APP */
+/* NAV ---> OTHER COMPONENTS ===>SEPATATION */
+//-> removing mobile navigation
+// desktopNav
+@media only screen and (min-width: 768px){
+
+    /* smaller screen  */
+    // setting padding from the main container
+    .MainApp_container{
+        // all devices padding
+        overflow-x: hidden;
+        min-height: 100vh;
+        position: relative;
+        display: grid;
+        grid-template-columns: 215px 1fr;
+        grid-template-rows: 65px 1fr;
+        color: #fff;
+        overflow: hidden;
+        background: $blackMainColor;
+        background: none;
+        background: linear-gradient(to bottom, #212121,5%,#121212)
+    }
+
+    .MA_header{
+        //background-color: $blackMainColor;
+        height: 65px;
+        color: inherit;
+        padding: 0px 24px;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+        grid-template-areas: "MA_headerprofilebtnnav";
+        background: none;
+        background: none !important;
+        & .MA_logoTextContainer{
+            grid-area: MA_logotext;
+            justify-self: start;
+            font-size: 25px;
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-gap: 5px;
+            align-self: center;
+            align-items: center;
+            justify-items: center;
+            display:none;
+    
+            & .MA_logoContainer{
+                @include GridParentCentering;
+            }
+            & .MA_logoText{
+                font-weight: 700;
+            }
+        }
+    
+        & .MA_headerProfileBtnNav{
+            grid-area: MA_headerprofilebtnnav;
+            align-self: center;
+            justify-self: end;
+            height: auto;
+            width: auto;
+            cursor: pointer;
+            //border: 1px solid green;
+            //background: $blackMainColor;
+            /* Separate for Image and Icon */
+            // color: #535353;
+            //border-radius: 20px;
+    
+            //button
+            & .MA_headerProfileBtn{
+                padding: 5px 5px;
+                //border: 1px solid red;
+                height: auto;
+                width: auto;
+                cursor: pointer;
+                overflow: hidden;
+                display: grid;
+                //border-radius: none;
+                border-radius: 25px;
+                grid-template-columns: 30px auto auto;
+                grid-template-rows: 30px;
+                background: inherit;
+                align-items: center;
+                grid-column-gap: 8px;
+                background: $blackMainColor;
+    
+                & div.MA_headerProfileBtnIMGCON{
+                    border-radius: 50%;
+                    height: 30px;
+                    width: 30px;
+                    overflow: hidden;
+                    & img{
+                        height: 100%;
+                        width: 100%;
+                        object-fit: cover;
+                    }
+                }
+                
+
+                & div.MA_headerProfileBtnNMCON {
+                    max-width: 150px;
+                    display: grid;
+                    
+                    & h1 {
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: #fff;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+
+                    }
+                }
+    
+                & div.MA_headerProfileBtnIIconCON{
+                    display: grid;
+
+                    & svg {
+                        font-size: 18px;
+                    }
+                }
+    
+                
+            }
+    
+            // ul
+            & .MA_headerProfileNav{
+                display: none;
+                position: absolute;
+                list-style-type: none;
+                top: 40px;
+                right: 0;
+                width: 196px;
+                border-radius: 5px;
+                background-color: $profileNavBackground;
+    
+                & li {
+                    height: 40px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: $profileNavDimText;
+                    display: grid;
+                    align-self: center;
+                    padding: 12px;
+                    cursor: pointer;
+                }
+            }
+        }
+    
+        & .MA_mobileMenu{
+            grid-area: MA_mobileMenu;
+            position: relative;
+            justify-self: center;
+            align-self: center;
+            height: 20px;
+            width: 28px;
+            background-color: none;
+            border: none;
+            background-color: inherit;
+            display: none;
+    
+    
+            & .MA_mobileMenuLine1, .MA_mobileMenuLine2, .MA_mobileMenuLine3{
+                position: absolute;
+                height: 4px;
+                width:28px;
+                background-color: #fff;
+               border-radius: 1px;
+            }
+    
+            & .MA_mobileMenuLine1{
+                top: 0;
+                left: 0;
+            }
+    
+            & .MA_mobileMenuLine2{
+                top: 50%;
+                left: 0;
+                transform: translateY(-50%);
+            }
+    
+            & .MA_mobileMenuLine3{
+                bottom: 0;
+                left: 0;
+            }
+    
+            &:hover{
+                cursor: pointer;
+            }
+    
+        }
+    }
+
+    .navOpen{
+        right: 0px;
+    }
+
+    .navClose{
+        right: -250px;
+    }
+    // hiding the nav in the mobile
+    .MA_nav{
+        
+    }
+    .MA_navMain{
+        grid-area: 1/1/3/2;
+        //border: 1px solid green;
+        z-index: 99;
+        position: relative;
+        max-height: 100vh;
+        height: 100%;
+        width: 100%;
+        padding-right: 0px;
+        //background: #fff;
+        //display: none;
+        //background-color: $blackMainColor;
+        transition: right 0.3s ease-out;
+
+        & div.MA_navTopDiv{
+            padding-bottom: 0px;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 50px 30px;
+
+            & .MA_logoTextContainer{
+                justify-self: start;
+                font-size: 25px;
+                display: grid;
+                grid-template-columns: auto auto;
+                grid-gap: 5px;
+                align-self: end;
+                align-items: center;
+                justify-items: center;
+        
+                & .MA_logoContainer{
+                    @include GridParentCentering;
+                }
+                & .MA_logoText{
+                    font-weight: 700;
+                }
+            }
+    
+        }
+        & ul.MA_navTop {
+            padding-right: 10px;
+            height: auto;
+            width: 100%;
+            list-style-type: none;
+            //overflow: hidden;
+
+            & li {
+                justify-content: start;
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-gap: 15px;
+                align-items: center;
+                height: 40px;
+                cursor: pointer;
+
+                & div {
+                    align-self: center;
+                    display: grid;
+                    align-items: center;
+                    height: 100%;
+                    margin: 0px;
+                    font-size: 24px;
+                    & svg {
+                        fill: $iconDimColor;
+                    }
+                    &:hover > svg{
+                        fill: #fff;
+                    }
+                }
+
+                & a {
+                    //border: 1px solid red;
+                    justify-self: start;
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: $iconDimColor;
+                    text-decoration: none;
+
+                    &:hover {
+                        color: #fff;
+                    }
+                }
+
+                & a.MA_navLikeda{
+                    font-size: 14px;
+                    font-weight: 800;
+                }
+                // heart icon
+                & div.MA_navHeartIcon{
+                    font-size: 12px;
+                    height: 25px;
+                    width: 25px;
+                    //border: 1px solid red;
+                    @include GridParentCentering;
+                    background: linear-gradient(to bottom right, #462FA6, #798C9A)
+                }
+                
+            }
+
+            & li.MA_navTopPlaylist_gap{
+                // matching with the bot gap
+                height: 30px;
+            }
+        }
+
+        & ul.MA_navBot{
+            position: relative;
+            margin-top: 30px;
+            height: auto;
+            list-style-type: none;
+
+            & li {
+                height: 30px;
+                align-items: center;
+                font-size: 14px;
+                font-weight: 400;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+                cursor: pointer;
+                color: $profileNavDimText;
+
+                & a {
+                    color: $profileNavDimText;
+                    text-decoration: none;
+                    font-size: 14px;
+                    font-weight: 500;
+
+                    &:hover{
+                        color: #fff;
+                    }
+                }
+            }
+        }
+    }
+
+    
+    // --> control this later on with chilld contianers
+    .MA_outletContainer{
+        width: 100%;
+        height: auto;
+        //padding: 30px 10px;
+        padding-bottom: 150px;
+        //background-color: $OutletBackground;
+        background: none;
+    }
+
+
+
+}
+@media only screen and (min-width: 992px){
+}
+
+@media only screen and (min-width: 1200px){
+}
+
+@media only screen and (min-width: 1400px){
 
 }
 // @media only

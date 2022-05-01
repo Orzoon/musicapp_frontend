@@ -33,6 +33,11 @@ export default function appReducer(state, action){
                 ...state,
                 home: [...state.home, action.payload]
             }
+        case "SET_POP":
+            return {
+                ...state,
+                home: [...state.home, action.payload]
+            }
         case "SET_WORKOUT":
             return {
                 ...state,

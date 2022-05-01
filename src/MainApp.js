@@ -7,20 +7,29 @@ import { spotifyApi } from "./helper";
 import { AppContext } from "./context";
 import NavPlaylist from "./subComponents/navPlaylist";
 import MusicPlayer from "./Components/MusicPlayer";
+
+// hooks
+import {useWindowWidthResize} from "./hooks"
 // icons
-import {FaSpotify} from "react-icons/fa"
-import{FaHome} from "react-icons/fa"
-import {FaSearch} from "react-icons/fa";
-import{FaHeart} from "react-icons/fa"
+import {
+    FaSpotify, 
+    FaPlus,
+    FaHome,
+    FaSearch, 
+    FaHeart,
+    FaCaretDown} from "react-icons/fa";
+import {MdClose} from "react-icons/md"
 import {BiLibrary} from "react-icons/bi";
+import {AiOutlinePlus} from "react-icons/ai"
 
 // importing the styles
 import "./styles/MainApp.scss";
 
-const _token = "BQDN-H0rRTy76ziTaUGSdRxwpS-8IlK6Q37TPCPQV_M_w8vwVx4TNWzXVwcB-NOsAm6GdU3EMrYNF4QVTZbgKDLa3PSqlWVOAGiy2UQKibFcZGQ7Juxdce4YJWcqKU5yOQW0z3Nsof22WzEnksqVJJmofp5XWtduZyAZrDJD1w6k34plscHe5DNa_9irKY1Pu4ntlL5HyCJvDvzvOTgL_f5-5aZxbFU03XD-O7ZpexcUlQ7Cy1-9DE5JGQqUDiM-jTHiSPq1O8VRMAW3DiIgAaPkayjrOpKPa2UyC3cy79Y";
+const _token = "BQCkzpsII1G-2qzBR0RG5M7LF7Vgh1606NnZM-1PP7d2Wds6Z0v-GJ34ApcJZdYlvtFzxUXbZbXDxfNiNsitowjBeZ7YOvC0tVHGu0YPXa-nZyVjadtPPdc3Q4k2g5cER9cvCP6KjUkLMk_MN2desv2amljb-Bi2FpgtUmHF6n4TCA2d4LuXVykYOPQ7qQpTZz75e00Xv6NqFtkjqCB9HJvPJg54I17UtgJ000F267GSd9AIamVyHSID9cUUIF2zvk3P8josmEMRb5-dRX8gQbKpi_5Zsyl_PRiRE5wJnxA";
 
 
 export default function MainApp(){
+    const {windowWidth} = useWindowWidthResize();
     const navRef = useRef(null);
     const headerRef = useRef(null);
     const [{
@@ -32,6 +41,7 @@ export default function MainApp(){
 
     const [token, setToken] = useState(null);
     const [navOpen, setNavOpen] = useState(false);
+    const [mbl, setMbl] = useState(null);
     useEffect(() => {
 
         //closing the nav on the click
@@ -59,14 +69,14 @@ export default function MainApp(){
             // })
 
             //--> Fresh New Music
-            spotifyApi.getNewReleases()
-            .then(_newRelease => {
-                const _freshNewMusic = {
-                    hometitle: "Fresh New Music",
-                    tracks: _newRelease.albums.items
-                }
-                dispatch({type: "SET_FRESH_NEW_MUSIC", payload: _freshNewMusic})
-            })
+            // spotifyApi.getNewReleases()
+            // .then(_newRelease => {
+            //     const _freshNewMusic = {
+            //         hometitle: "Fresh New Music",
+            //         tracks: _newRelease.albums.items
+            //     }
+            //     dispatch({type: "SET_FRESH_NEW_MUSIC", payload: _freshNewMusic})
+            // })
 
             spotifyApi.getCategories()
             .then(cat => null)
@@ -83,7 +93,18 @@ export default function MainApp(){
                 }
                 dispatch({type: "SET_MOOD", payload: _mood})
             })
-
+            // --> pop
+                        //--> MOOD
+                        spotifyApi.getCategoryPlaylists("pop")
+                        .then(pop => {
+                           // console.log("mood", mood)
+                            const _pop = {
+                                hometitle: "Pop",
+                                tracks: pop.playlists.items 
+                                //tracks
+                            }
+                            dispatch({type: "SET_POP", payload: _pop})
+                        })
             //--> workout
             spotifyApi.getCategoryPlaylists("workout")
             .then(workout => {
@@ -134,6 +155,16 @@ export default function MainApp(){
         return () => document.removeEventListener("click", navOutSideClickHandler)
     })
 
+    useEffect(() => {
+        if(windowWidth >= 768){
+            setMbl(false)
+            setNavOpen(false);
+            return 
+        }
+        setMbl(true)
+        setNavOpen(false);
+    }, [windowWidth])
+
     function navOutSideClickHandler(e){
         if(!navRef.current.contains(e.target) && !headerRef.current.contains(e.target)){
             setNavOpen(false)
@@ -164,13 +195,24 @@ export default function MainApp(){
                     <div className = "MA_headerProfileBtnNav">
                             <button className = "MA_headerProfileBtn">
                                 {/* default Icon or Image */}
-                               {user && user.images.length >= 1 &&
-                                <img src = {user.images[0].url} alt = "user profile"/>
-                               } 
-                                {/* replace fa Icon */}
-                               {user && user.images.length <= 0 &&
-                                 "I"
-                               }
+                                <div className = "MA_headerProfileBtnIMGCON">
+                                    {user && user.images.length >= 1 &&
+                                        <img src = {user.images[0].url} alt = "user profile"/>
+                                    } 
+                                        {/* replace fa Icon */}
+                                    {user && user.images.length <= 0 &&
+                                        "I"
+                                    }
+                                </div>
+                                <div className = "MA_headerProfileBtnNMCON">
+                                    <h1>
+                                        {user && user.display_name}
+                                    </h1>
+                                </div>
+                                <div className = "MA_headerProfileBtnIIconCON">
+                                   <FaCaretDown/>
+                                </div>
+
                             </button>
                             {/* ProfileName */}
                             <ul className = "MA_headerProfileNav">
@@ -193,10 +235,23 @@ export default function MainApp(){
                     </button>
                 </header>
 
-                {/* -Main Navigation-- */}
-                <nav
-                    ref={navRef} 
-                    className = {navOpen ? "MA_nav navOpen": "MA_nav navClose"}>
+                {/* -mbl Navigation-- */}
+                
+                {mbl && 
+                <nav 
+                    className = {navOpen ? "MA_nav navCommon navOpen": "MA_nav navCommon navClose"}
+                    ref={navRef}>
+                    <div className = "MA_navTopDiv">
+                            <button 
+                                onClick={(e) => {setNavOpen(false)}}
+                                className = "MA_navCloseBtn">
+                               <MdClose />
+                            </button>
+                            <button className = "MA_ProfileBTN">
+                               <img/>
+                               <h2></h2>
+                            </button>
+                    </div>
                     <ul className = "MA_navTop">
                         <li>
                             <div><FaHome/></div>
@@ -214,8 +269,12 @@ export default function MainApp(){
 
                         </li>
                         <li>
+                            <div className = "MA_navPLusIcon"><AiOutlinePlus size={15}/></div>
+                            <Link to="yourlibrary" className="MA_navLikeda">Create Playlist</Link>
+                        </li>
+                        <li>
                             <div className = "MA_navHeartIcon"><FaHeart/></div>
-                            <Link to="yourlibrary">Liked Songs</Link>
+                            <Link to="yourlibrary" className="MA_navLikeda">Liked Songs</Link>
                         </li>
                     </ul>
                     {/* bottom nav --playlists*/}
@@ -230,8 +289,60 @@ export default function MainApp(){
                     </ul>
 
 
-                </nav>
+                </nav>}
+                {/* -Main- Navigation-- */}
+                {!mbl &&
+                <nav 
+                    className ="navCommon MA_navMain"
+                    ref={navRef}>
+                    <div className = "MA_navTopDiv">
+                        <div className = "MA_logoTextContainer">
+                            <div className= "MA_logoContainer">
+                                <FaSpotify size={42}/>
+                            </div>   
+                            <p className = "MA_logoText">
+                                Spotify
+                            </p>
+                        </div>
+                    </div>
+                    <ul className = "MA_navTop">
+                        <li>
+                            <div><FaHome/></div>
+                            <Link to="home">Home</Link>
+                        </li>
+                        <li>
+                            <div><FaSearch/></div>
+                            <Link to="search">Search</Link>
+                        </li>
+                        <li>
+                            <div><BiLibrary/></div>
+                            <Link to="yourlibrary">Your Library</Link>
+                        </li>
+                        <li className = "MA_navTopPlaylist_gap">
 
+                        </li>
+                        <li>
+                            <div className = "MA_navPLusIcon"><AiOutlinePlus size={15}/></div>
+                            <Link to="yourlibrary" className="MA_navLikeda">Create Playlist</Link>
+                        </li>
+                        <li>
+                            <div className = "MA_navHeartIcon"><FaHeart/></div>
+                            <Link to="yourlibrary" className="MA_navLikeda">Liked Songs</Link>
+                        </li>
+                    </ul>
+                    {/* bottom nav --playlists*/}
+                    <ul className = "MA_navBot">
+                        {playlists.map((item, index) => {
+                            return(
+                                <NavPlaylist key ={item.id} item = {item}/>
+                            )
+                         })
+                        
+                        }
+                    </ul>
+
+
+                </nav>}
         
                 <AppContext.Provider value ={{
                     user,

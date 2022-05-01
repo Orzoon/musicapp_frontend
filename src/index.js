@@ -22,7 +22,9 @@ root.render(
         <Routes>
             <Route path = "/" element = {<Login/>}/>
             <Route path='/app' element= {<MainApp/>}>
-                <Route path = 'home' element = {<Home/>}/>
+                <Route path = 'home' element = {<Home/>}>
+                    <Route path =":homeID" element = {<Home/>}/>
+                </Route>
                 <Route path = 'search' element = {<Search/>}/>
                 <Route path = 'yourlibrary' element = {<YourLibrary/>}/>
                 <Route path = 'playlist' element = {<PlaylistOutlet/>}>

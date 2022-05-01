@@ -34,23 +34,21 @@ function usePlaylistFindMore(){
 }
 
 function useWindowWidthResize(){
-    const [windowWidth, setWindowWidth] = useState(null)
-
-
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
     useEffect(() => {
-     
-        window.addEventListener('resize', serWidthHandler)  
-        return null
-    })
+        window.addEventListener('resize', setWidthHandler) 
+        return (() => window.removeEventListener('resize', setWidthHandler))
+    }, [])
 
-
-    function serWidthHandler(){
+    function setWidthHandler(){
         setWindowWidth(window.innerWidth)
     }
-    return {}
+    return {windowWidth}
 }
+
 /* Exporting Hooks */
 export {
-    usePlaylistFindMore
+    usePlaylistFindMore,
+    useWindowWidthResize
 }

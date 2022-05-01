@@ -14,6 +14,7 @@ import {
 
 /******PLAYLIST_SEARCH*******/
 export function PlaylistSearch({
+    external,
     searchFix,
     findMore,
     setFindMore,
@@ -80,7 +81,7 @@ export function PlaylistSearch({
         </>
     ) 
 
-
+    if(external) return null
     return(
         <div 
             className = {(findMore && searchFix) ? 
@@ -100,6 +101,7 @@ export function PlaylistSearch({
 /******PLAYLIST_SONGSList*******/
 export function PlaylistSongsList(props){
     const {
+        external,
         track, 
         searchSectionBool,
         addTrackToPlaylistHandler,
@@ -118,7 +120,6 @@ export function PlaylistSongsList(props){
         type,
     } = track;
     const time = milliSecondToTime(duration_ms); 
-    
     /* Checking for the liked song */
     useEffect(() => {
         spotifyApi.containsMySavedTracks([track.id])
@@ -183,9 +184,8 @@ export function PlaylistSongsList(props){
 
                 {/* Image */}
                 <li className = "PL_ULC_4">
-                    <img src={album.images[0].url} alt = "#"/>
+                    <img src={album && album.images[0].url} alt = "#"/>
                 </li>
-
                 {/* Song Name */}
                 <li className = "PL_ULC_5">
                     <h3>{name}</h3>
@@ -194,6 +194,7 @@ export function PlaylistSongsList(props){
                         {/* ALBUM ARTISTS LOOP */}
                         {/* REPLACING WITH LINK LATER ON */}
                         {album.artists.map((artist, index) => {
+                        
                                 if(index > 0){
                                     return (
                                         <a 
@@ -263,6 +264,7 @@ export function PlaylistSongsList(props){
 
                             {dropDownBool && 
                             <ListDropdown 
+                                external = {external}
                                 id = {id}
                                 dropDownBool = {dropDownBool}
                                 setDropDownBool = {setDropDownBool}
@@ -296,6 +298,7 @@ export function PlaylistSongsList(props){
 function ListDropdown(props){
     
     const {
+        external,
         id, 
         dropDownBool,
         setDropDownBool,
@@ -330,14 +333,17 @@ function ListDropdown(props){
         className = "PL_ULC_9UL"
         ref = {ListDropdownRef}
         >
-        <li>
-            <button
-                onClick={(e) => {
-                    removeTrackFromPlaylistHandler(trackUri)
-                    setDropDownBool(false)
-                }}
-            >Remove From this playlist</button>
-        </li>
+        
+        {external ? 
+            null: 
+            <li>
+                <button
+                    onClick={(e) => {
+                        removeTrackFromPlaylistHandler(trackUri)
+                        setDropDownBool(false)
+                    }}
+                >Remove From this playlist</button>
+            </li>}
         <li>
             {liked ? 
                 <button

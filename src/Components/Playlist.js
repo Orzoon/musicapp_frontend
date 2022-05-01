@@ -32,7 +32,9 @@ export default function Playlist(){
         playlists,
         dispatch} = useContext(AppContext);
     const {playlistID} = useParams();
-    
+    // ExternalPlaylist 
+       const [external, setExternal] = useState(null); 
+
     // PlaylistGenralData
     const [playListData,setPlayListData] = useState(null);
     const [albums, setAlbums] = useState(null);
@@ -52,11 +54,119 @@ export default function Playlist(){
     const [searchFix, setSearchFix] = useState(false);
     /* USEFFECT --> PLAYLIST */
     useEffect(() => {
+        /* iF no playlistID */
+
+
+        //--check for external first
+        if(playlistID.split(":").length > 2){
+            const externalParam = playlistID.split(":"); //array
+
+            /* COMMON_VARIABLES */
+
+            /* FOR Type_Playlist */
+            if(externalParam[1] ==="playlist"){
+                // getting playlist
+                spotifyApi.getPlaylist(externalParam[2])
+                /* General DATA */
+                .then(playlistOverallData => {
+                    const _playListData = {
+                        name: playlistOverallData.name,
+                        owner:playlistOverallData.owner,
+                        images: playlistOverallData.images,
+                        id: playlistOverallData.id
+                    }
+
+                    setPlayListData(_playListData)
+                    setExternal(true)
+                    return playlistOverallData.id;
+                })
+                 /* tracks */
+                .then(playlistID => {
+                    spotifyApi.getPlaylistTracks(playlistID)
+                    .then(trackList => {
+                        const _tracks= trackList.items.reduce((accumulator, currentItem) => {
+                            return [...accumulator,currentItem.track]
+                        }, []);
+                        const _onlyTracks = _tracks.reduce((accumulater, item) => {
+                            if(item.track){
+                               return [...accumulater, item]
+                            }
+
+                            return accumulater
+                            //return accumulater
+                        }, [])
+                        const totTrackLength_ms = _onlyTracks.reduce((accumulator, currentItem) => {
+                            return accumulator + currentItem.duration_ms
+                        },0)
+
+                        // setting _albums and totalLength
+                        setAlbums(_onlyTracks)
+                        setTotalLength(totTrackLength_ms)
+                    })
+                })
+            }
+
+            /* SKIPPED PART */
+            if(externalParam[1] === "album"){
+                spotifyApi.getAlbum(externalParam[2])
+                /* General DATA */
+                .then(_album => {
+                    const _playListData = {
+                        name: _album.name,
+                        owner: {
+                            display_name: _album.owner ? _album.owner: "Spotify"
+                        },
+                        images: [_album.images[0]],
+                        id: _album.id
+                    }
+                    /* NOTE */
+                    /* SKIPPED PART */
+                    spotifyApi.getAlbumTracks(_album.id)
+                    .then((trackList => {
+                        console.log("albumtracks", trackList)
+                        const _tracks= trackList.items.reduce((accumulator, currentItem) => {
+                            if(currentItem.type ==="track"){
+                                accumulator = [...accumulator, currentItem]
+                            }
+                            return accumulator
+                        }, []);
+                        const _onlyTracks = _tracks.reduce((accumulater, item) => {
+                            if(item.type ==="track"){
+                               return [...accumulater, item]
+                            }
+
+                            return accumulater
+                            //return accumulater
+                        }, [])
+                        const totTrackLength_ms = _onlyTracks.reduce((accumulator, currentItem) => {
+                            return accumulator + currentItem.duration_ms
+                        },0)
+
+                        console.log("tracks",_onlyTracks)
+                        console.log("onlyTracks", _onlyTracks)
+                        // setting _albums and totalLength
+                        console.log("playlistData",_playListData)
+                        setPlayListData(_playListData)
+                        setExternal(true)
+                        setAlbums(_onlyTracks)
+                        setTotalLength(totTrackLength_ms)
+                    }))
+                   
+                })
+            }
+
+
+            return
+        }
+
+
+
         /* PUBLIC PLAYLIST */
         /* FILTERING PLAYLIST DATA FROM PLAYLISTID */
         if(playlists.length > 0){
             const playlistGeneralData = playlists.filter((item, index) => item.id.toString() === playlistID.toString());
             // saving as an object
+            setExternal(false)
             setPlayListData(...playlistGeneralData)
         }
 
@@ -73,17 +183,25 @@ export default function Playlist(){
                         return [...accumulator,currentItem.track]
                     }, [])
 
+
+                    const _onlyTracks = _albums.reduce((accumulater, item) => {
+                        if(item.track){
+                           return [...accumulater, item]
+                        }
+
+                        return accumulater
+                        //return accumulater
+                    }, [])
                     // const _albumsIDs = _albums.reduce((accumulater, currentItem) => {
                     //     return [...accumulater, currentItem.uri]
                     // }, []) 
                     /* Making req for the liked ones */
                     /* Getting the total Length of all tracks */
-                    const totTrackLength_ms = _albums.reduce((accumulator, currentItem) => {
+                    const totTrackLength_ms = _onlyTracks.reduce((accumulator, currentItem) => {
                         return accumulator + currentItem.duration_ms
                     },0)
                     setTotalLength(totTrackLength_ms)
-                    setAlbums(_albums)
-                    console.log(_albums)
+                    setAlbums(_onlyTracks)
                 }
                 // if no albums then setting FINDMORE TO TRUE
                 if(data.items.length === 0){
@@ -258,6 +376,7 @@ export default function Playlist(){
                                         track = {album}
                                         searchSectionBool = {false}
                                         index = {index}
+                                        external = {external}
                                         /* methods */
                                         removeTrackFromPlaylistHandler = {removeTrackFromPlaylistHandler}
                                         musicDispatchHandler = {musicDispatchHandler}
@@ -271,6 +390,7 @@ export default function Playlist(){
                     /* css */
                     searchFix = {searchFix}
                     /* values */
+                    external = {external}
                     playlistID = {playlistID}
                     findMore = {findMore}  /* Boolean */
                     setFindMore = {setFindMore} /* Boolean */
