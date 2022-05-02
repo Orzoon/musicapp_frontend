@@ -3,7 +3,7 @@ import {Link, useParams, useNavigate} from "react-router-dom";
 import {FaPlay} from "react-icons/fa"
 
 
-function ListItems({item, title, homeID, linkTitle}){
+function ListItems({item, title, homeID, linkTitle, showPlayHomeBtn}){
     const [artistsNames, setArtistsNames] = useState("");
     const navigate = useNavigate();
     useEffect(() => {
@@ -16,7 +16,8 @@ function ListItems({item, title, homeID, linkTitle}){
             const combinedNames = names.join(",")
             setArtistsNames(combinedNames)
         }
-    }, [])
+        console.log("howbtn", showPlayHomeBtn)
+    }, [showPlayHomeBtn])
 
 
     function toPlaylistHandler(){
@@ -24,9 +25,12 @@ function ListItems({item, title, homeID, linkTitle}){
         navigate(link)
     }
     return(
-        <li className = "H_catCardli">
+        <li 
+            className = "H_catCardli"
+            onClick={(e) => {toPlaylistHandler()}}
+            >
             <div className = "H_CardliImageCon">
-                <img src = {item.images[0].url} alt ="album image"/>
+                <img src = {item.images[0].url} alt ="album"/>
                 {/* play Button for small device */}
 
                 {homeID === linkTitle ? 
@@ -36,6 +40,13 @@ function ListItems({item, title, homeID, linkTitle}){
                         >
                         <FaPlay/>
                     </button>
+                    :showPlayHomeBtn ?
+                        <button 
+                            className = "H_CardliImagePlayBTN"
+                            onClick = {(e) => {toPlaylistHandler()}}
+                            >
+                            <FaPlay/>
+                        </button>
                     : null
                 }
             </div>
@@ -55,7 +66,7 @@ function ListItems({item, title, homeID, linkTitle}){
 //-> RECENTLY PLAYED AND FRESH NEW MUSIC
 
 
-function CommonHomeCard({title, items}){
+function CommonHomeCard({title, items,showPlayHomeBtn}){
     const {homeID} = useParams();
     const [linkTitle, setLinkTitle] = useState("");
     useEffect(() => {
@@ -88,6 +99,7 @@ function CommonHomeCard({title, items}){
                         item = {item}
                         homeID = {homeID}
                         linkTitle = {linkTitle}
+                        showPlayHomeBtn = {showPlayHomeBtn}
                     />)
                 })}
 

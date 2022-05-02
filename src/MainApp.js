@@ -25,13 +25,15 @@ import {AiOutlinePlus} from "react-icons/ai"
 // importing the styles
 import "./styles/MainApp.scss";
 
-const _token = "BQCkzpsII1G-2qzBR0RG5M7LF7Vgh1606NnZM-1PP7d2Wds6Z0v-GJ34ApcJZdYlvtFzxUXbZbXDxfNiNsitowjBeZ7YOvC0tVHGu0YPXa-nZyVjadtPPdc3Q4k2g5cER9cvCP6KjUkLMk_MN2desv2amljb-Bi2FpgtUmHF6n4TCA2d4LuXVykYOPQ7qQpTZz75e00Xv6NqFtkjqCB9HJvPJg54I17UtgJ000F267GSd9AIamVyHSID9cUUIF2zvk3P8josmEMRb5-dRX8gQbKpi_5Zsyl_PRiRE5wJnxA";
+const _token = "BQBU2AMQ8wTkKMyQr0Aj4R6ASnbp9ucClhI4ghccZDYBcjxKbOx4vlib-ploixoOf0roQjhUUBH8T9K-4NZLLv9MG38MgRfirqB8jj6wzCaxSzZmraLObXGyTXHEPoCGCrK2FiKog1AiiJJAqKS00lb1hTIz7ubtbLjYYAkIF01tuma4P__PN9in6fwqCOeKGOkoCw53ps4bQf_3LxN_zGqLYp4HAL5JjensYuu_0ALeTeTl4ucHF9ySBegGbFQkrajbX0rqdPxL8awYqb_GHatciv-rClTBCygzpA_b1Qw";
 
 
 export default function MainApp(){
     const {windowWidth} = useWindowWidthResize();
     const navRef = useRef(null);
+    const logoutULRef = useRef(null)
     const headerRef = useRef(null);
+    const btnRef = useRef(null);
     const [{
         user,
         home,
@@ -42,6 +44,7 @@ export default function MainApp(){
     const [token, setToken] = useState(null);
     const [navOpen, setNavOpen] = useState(false);
     const [mbl, setMbl] = useState(null);
+    const [logout, setLogout] = useState(false);
     useEffect(() => {
 
         //closing the nav on the click
@@ -166,16 +169,26 @@ export default function MainApp(){
     }, [windowWidth])
 
     function navOutSideClickHandler(e){
+
         if(!navRef.current.contains(e.target) && !headerRef.current.contains(e.target)){
             setNavOpen(false)
+        }
+        if(logout){
+            if(logoutULRef && !logoutULRef.current.contains(e.target) && !btnRef.current.contains(e.target)){
+                    setLogout(false)
+            }
         }
     }
 
     function HandleNavOpenClose(e){
         e.preventDefault();
-        setNavOpen(true)
+        setNavOpen(true);
+        setLogout(false);
     }   
 
+    function logoutHandler(){
+
+    }
     return( 
 
         <div className = "MainApp_container">
@@ -193,13 +206,18 @@ export default function MainApp(){
 
                     {/* --Profile -- */}
                     <div className = "MA_headerProfileBtnNav">
-                            <button className = "MA_headerProfileBtn">
+                            <button
+                                ref = {btnRef}
+                                onClick = {(e) => {
+                                    setLogout(!logout)
+                                }} 
+                                className = "MA_headerProfileBtn">
                                 {/* default Icon or Image */}
                                 <div className = "MA_headerProfileBtnIMGCON">
                                     {user && user.images.length >= 1 &&
                                         <img src = {user.images[0].url} alt = "user profile"/>
                                     } 
-                                        {/* replace fa Icon */}
+                                    {/* replace fa Icon */}
                                     {user && user.images.length <= 0 &&
                                         "I"
                                     }
@@ -212,17 +230,26 @@ export default function MainApp(){
                                 <div className = "MA_headerProfileBtnIIconCON">
                                    <FaCaretDown/>
                                 </div>
-
                             </button>
                             {/* ProfileName */}
-                            <ul className = "MA_headerProfileNav">
-                                {/* Link */}
-                                <li>Profile</li>
 
-                                {/* Button*/}
-                                <li>Logout</li>
+                            {/* logout UL */}
+
+                            {logout && 
+                            <ul 
+                                ref = {logoutULRef}
+                                className = "MA_headerProfileNavYUL">
+                                <li>
+                                    <button 
+                                        className = "MA_logoutButton"
+                                        onClick={(e) => {logoutHandler(e)}}
+                                    >
+                                        Log out
+                                    </button>
+                                </li>
                             </ul>
-        
+                            }
+                           
                     </div>
                     {/*--Mobile--HAM-menu-- */}
                     <button 

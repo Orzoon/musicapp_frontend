@@ -18,6 +18,7 @@ export default function Home(){
     const [homeDataCopy, setHomeDataCopy] = useState(null);
     const [indCat, setIndCat] = useState(null);
     const [indData, setIndData] = useState(null);
+    const [showPlayHomeBtn, setShowPlayHomeBtn] = useState(true);
 
     useEffect(() => {
         if(homeData){
@@ -37,6 +38,11 @@ export default function Home(){
                 const tracksSliced = dataObj.tracks.slice(0, itemsToReturn[size[1]])
                 return {...dataObj, tracks: tracksSliced}
             })
+            if(windowWidth >= 768){
+                setShowPlayHomeBtn(true)
+            }else {
+                setShowPlayHomeBtn(false)
+            }
             if(!homeID) setIndCat(false)
             setHomeDataCopy(slicedHomeData)
         }
@@ -77,6 +83,7 @@ export default function Home(){
                        <CommonHomeCard 
                         title = {homeDataObject.hometitle}
                         items = {homeDataObject.tracks}
+                        showPlayHomeBtn = {showPlayHomeBtn}
                         />
                    </div>
                )
@@ -90,6 +97,7 @@ export default function Home(){
                             <CommonHomeCard
                                 title = {indDataObject.hometitle}
                                 items = {indDataObject.tracks}
+                                showPlayHomeBtn = {false}
                                 />
                         </div>
                     )

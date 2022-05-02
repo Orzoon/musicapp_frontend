@@ -16,7 +16,6 @@ $OutletBackground: #121212;
 $textDescriptionColor: #A2A2A2;
 $hoverbgColor: #282828;
 
-
 /* helpful Mixins */
 
 @mixin GridParentCentering{
@@ -116,25 +115,36 @@ $hoverbgColor: #282828;
         }
 
         // ul
-        & .MA_headerProfileNav{
-            display: none;
+        & .MA_headerProfileNavYUL{
+            padding: 4px;
+            z-index: 6;
             position: absolute;
+            right: 0;
             list-style-type: none;
             top: 40px;
             right: 0;
             width: 196px;
             border-radius: 5px;
-            background-color: $profileNavBackground;
-
+            //background-color: $profileNavBackground;
+            background: $hoverbgColor;
+            width: 200px;
             & li {
-                height: 40px;
-                font-size: 13px;
-                font-weight: 600;
-                color: $profileNavDimText;
                 display: grid;
                 align-self: center;
-                padding: 12px;
-                cursor: pointer;
+
+                &:hover{
+                    background-color: rgb(59, 58, 58);
+                }
+                & button {
+                    background: none;
+                    border: none;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    padding: 12px;
+                    color: #EAEAEA;
+                    text-align: start;
+                }
             }
         }
     }

@@ -167,6 +167,7 @@ export default function Playlist(){
             const playlistGeneralData = playlists.filter((item, index) => item.id.toString() === playlistID.toString());
             // saving as an object
             setExternal(false)
+            console.log("playlistData", playListData)
             setPlayListData(...playlistGeneralData)
         }
 
