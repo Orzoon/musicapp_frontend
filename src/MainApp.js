@@ -25,7 +25,7 @@ import {AiOutlinePlus} from "react-icons/ai"
 // importing the styles
 import "./styles/MainApp.scss";
 
-const _token = "BQBU2AMQ8wTkKMyQr0Aj4R6ASnbp9ucClhI4ghccZDYBcjxKbOx4vlib-ploixoOf0roQjhUUBH8T9K-4NZLLv9MG38MgRfirqB8jj6wzCaxSzZmraLObXGyTXHEPoCGCrK2FiKog1AiiJJAqKS00lb1hTIz7ubtbLjYYAkIF01tuma4P__PN9in6fwqCOeKGOkoCw53ps4bQf_3LxN_zGqLYp4HAL5JjensYuu_0ALeTeTl4ucHF9ySBegGbFQkrajbX0rqdPxL8awYqb_GHatciv-rClTBCygzpA_b1Qw";
+const _token = "BQD-mzAGeW71O97yeKNgp0cJg0W63itzoqloRZY9O5zcfImKM7q3qMHGXUtdCtgc1ByZ771xysu_VD6o7PkdDNksgEJ6ya_bOo6lPyQRO9fScOb1i0ARr3I4eVmti-sMttTPDKLDJL8J9_NDQBwsh15HKJy5zsuci_GWV0sGVAM8ktY5VGmFoUDnpO_Qvken3XsdqpIlgJov32vJQ_Zq2XHNLDLH5faAOvCKIsXNn7Rj3IFsVJCaG4bMKT5qczWtofDN8ehUS3B5g6lJhlG040AXkPJSG-Op3RcoTlcfIag";
 
 
 export default function MainApp(){
@@ -129,8 +129,46 @@ export default function MainApp(){
                 }
                 dispatch({type: "SET_CHILL", payload: _chill})
             })
+            // ------->
+            spotifyApi.getCategoryPlaylists("hiphop")
+            .then(hiphop => {
+                const _hiphop = {
+                    hometitle: "Hip-hop",
+                    tracks: hiphop.playlists.items 
+                    //tracks
+                }
+                dispatch({type: "SET_HIPHOP", payload: _hiphop})
+            })
             
+            spotifyApi.getCategoryPlaylists("wellness")
+            .then(wellness => {
+                const _wellness = {
+                    hometitle: "Wellness",
+                    tracks: wellness.playlists.items 
+                    //tracks
+                }
+                dispatch({type: "SET_WELLNESS", payload: _wellness})
+            })
 
+            spotifyApi.getCategoryPlaylists("rock")
+            .then(gaming => {
+                const __gaming = {
+                    hometitle: "Rock",
+                    tracks: gaming.playlists.items 
+                    //tracks
+                }
+                dispatch({type: "SET_GAMING", payload: __gaming})
+            })
+
+            spotifyApi.getCategoryPlaylists("party")
+            .then(party => {
+                const _party = {
+                    hometitle: "Party",
+                    tracks: party.playlists.items 
+                    //tracks
+                }
+                dispatch({type: "SET_PARTY", payload: _party})
+            })
             /*---- PLAYLISTS-----*/
             /*************/
             /******/

@@ -12,7 +12,7 @@ import "../styles/Home.scss"
 export default function Home(){
     const {homeID} = useParams(null);
     const navigate = useNavigate();
-    const homeIDS = ["mood","freshnewmusic","workout","chill", "pop"]
+    const homeIDS = ["mood","freshnewmusic","workout","chill", "pop", "hip-hop", "wellness", "party", "rock"]
     const {windowWidth} = useWindowWidthResize()
     const {home: homeData} = useContext(AppContext)
     const [homeDataCopy, setHomeDataCopy] = useState(null);
@@ -58,6 +58,7 @@ export default function Home(){
                 setIndCat(false);
                 setIndData(null)
                 navigate("/app/home", {replace: true})
+                return
             }
             const filteredIndData = homeData.filter((homeObj, index) => {
                 const _title = homeObj.hometitle.split(" ").join("").toLowerCase();
@@ -66,6 +67,7 @@ export default function Home(){
         
             setIndData(filteredIndData)
             setIndCat(true)
+            window.scrollTo(0,0,)
         }
     }, [homeID, homeData])
 

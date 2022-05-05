@@ -48,6 +48,26 @@ export default function appReducer(state, action){
                 ...state,
                 home: [...state.home, action.payload]
             }
+        case "SET_HIPHOP":
+                return {
+                    ...state,
+                    home: [...state.home, action.payload]
+                } 
+        case "SET_WELLNESS":
+            return {
+                ...state,
+                home: [...state.home, action.payload]
+            }   
+        case "SET_GAMING":
+            return {
+                ...state,
+                home: [...state.home, action.payload]
+            }  
+        case "SET_PARTY":
+            return {
+                ...state,
+                home: [...state.home, action.payload]
+            }  
         /* --PLAYLISTS-- */
         /***********/
         /********/

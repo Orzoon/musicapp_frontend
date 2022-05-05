@@ -16,7 +16,6 @@ function ListItems({item, title, homeID, linkTitle, showPlayHomeBtn}){
             const combinedNames = names.join(",")
             setArtistsNames(combinedNames)
         }
-        console.log("howbtn", showPlayHomeBtn)
     }, [showPlayHomeBtn])
 
 
