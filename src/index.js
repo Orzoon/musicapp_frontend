@@ -13,6 +13,7 @@ import MainApp from './MainApp';
 import Home from "./Components/Home"
 import Search from "./Components/Search"
 import YourLibrary from "./Components/YourLibrary"
+import LikedSongs from "./Components/LikedSongs";
 import PlaylistOutlet from './Components/PlaylistOutlet';
 import Playlist from './Components/Playlist';
 
@@ -30,6 +31,8 @@ root.render(
                 <Route path = 'playlist' element = {<PlaylistOutlet/>}>
                     <Route path =":playlistID" element = {<Playlist/>}/>
                 </Route>
+                <Route path = 'likedsongs' element = {<LikedSongs/>}/>
+            
             </Route>
         </Routes>
     </BrowserRouter>

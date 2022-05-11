@@ -2,7 +2,7 @@
 @import "./global";
 
 /* Global-Google-Font */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&family=Raleway:wght@100;200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&family=Raleway:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 /* _Global Colors_ */
 $blackMainColor: #000;
@@ -202,18 +202,21 @@ $hoverbgColor: #282828;
 // hiding the nav in the mobile
 .navCommon{
     //border: 1px solid green;
-    min-height: 500px;
-    height: 100%;
+    //min-height: 500px;
    //background: #fff;
     //display: none;
-    min-height: 100%;
+    //min-height: 100%;
     width: 200px;
+    height: 100%;
     background-color: $blackMainColor;
     padding: 0px 24px;
     padding-top: 20px;
+    padding-bottom: 90px;
     transition: right 0.3s ease-out;
     //overflow-y: auto;
     overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
     & ul.MA_navTop {
         height: auto;
         width: 100%;
@@ -222,7 +225,7 @@ $hoverbgColor: #282828;
         & li {
             justify-content: start;
             display: grid;
-            grid-template-columns: auto 1fr;
+            grid-template-columns: 1fr;
             grid-gap: 15px;
             align-items: center;
             height: 40px;
@@ -232,58 +235,113 @@ $hoverbgColor: #282828;
                 fill: #fff;
                 color: #fff;
             }
-            & div {
-                align-self: center;
-                display: grid;
-                align-items: center;
-                height: 100%;
-                margin: 0px;
-                font-size: 24px;
-                & svg {
-                    fill: $iconDimColor;
-                }
-            }
-
-            & a {
-                justify-self: start;
-                font-size: 12px;
-                font-weight: 800;
-                color: $iconDimColor;
+            /* ----------LATER ADDITION ----------*/
+            & a.MA_navLink{
                 text-decoration: none;
+                height: 100%;
+                width: 100%;
+                display: grid;
+                grid-template-columns: auto 1fr;
+                justify-items: center;
+                align-items: center;
+                grid-gap: 15px;
+
+                &:hover > span.span_navText{
+                    color: #fff;
+                }
+                &:hover > span.span_navIcon svg{
+                    fill: #fff;
+                }
+                span.span_navIcon{
+                    align-self: center;
+                    display: grid;
+                    align-items: center;
+                    height: 100%;
+                    margin: 0px;
+                    font-size: 24px;
+                    color: $iconDimColor;
+                    & svg {
+                        fill: $iconDimColor;
+                    }
+                }
+                span.span_navText{
+                    justify-self: start;
+                    font-size: 12px;
+                    font-weight: 800;
+                    color: $iconDimColor;
+                    text-decoration: none;
+                }
             }
-            // heart icon
-            & div.MA_navHeartIcon{
-                border-radius: 2px;
-                font-size: 12px;
-                height: 25px;
-                width: 25px;
+
+            & button.PlaylistBTNB {
+                grid-area: 1/1/1/3;
+                width: 100%;
+                //height: auto;
                 //border: 1px solid red;
-                @include GridParentCentering;
-                background: linear-gradient(to bottom right, #462FA6, #798C9A);
+                //background: red;
+                display: grid;
+                grid-template-columns: 26px auto;
+                background: none;
+                border: none;
+                grid-gap: 15px;
+                justify-items: center;
+                padding: 4px 8px 4px 0px;
+                cursor: pointer;
 
-            }
+                &:hover > span.MA_navPLusIcon{
+                    background-color: #fff;
+                }
+                &:hover > span.MA_navHeartIcon svg {
+                    fill: #fff;
+                }
+                &:hover > span.MA_navLikeda{
+                    color: #fff;
+                }
+                & span.MA_navPLusIcon{
+                    border-radius: 2px;
+                    font-size: 12px;
+                    height: 25px;
+                    width: 25px;
+                    //border: 1px solid red;
+                    display: grid;
+                    @include GridParentCentering;
+                    background: $iconDimColor;
+                    justify-self: start;
 
-            & div.MA_navPLusIcon{
-                border-radius: 2px;
-                font-size: 12px;
-                height: 25px;
-                width: 25px;
-                //border: 1px solid red;
-                @include GridParentCentering;
-                background: $iconDimColor;
-
-                & svg {
-                    fill: #000;
+                    & svg {
+                        fill: #000;
+                    }
                 }
 
-                &:hover > svg {
-                    fill: #000;
+                & span.MA_navLikeda{
+                    font-size: 12px;
+                    font-weight: 800;
+                    color: $iconDimColor;
+                    justify-self: start;
+                    align-self: center;
                 }
 
-                &:hover {
-                    background: #fff;
-                    transition: 0.2s ease-in;
+                & span.MA_navHeartIcon {
+                    border-radius: 2px;
+                    font-size: 12px;
+                    height: 25px;
+                    width: 25px;
+                    //border: 1px solid red;
+                    @include GridParentCentering;
+                    background: linear-gradient(to bottom right, #462FA6, #798C9A);
+                    color: $iconDimColor;
+                    display: grid;
+                    justify-items: center;
+                    align-items: center;
+                    justify-self: start;
+                    & svg {
+                        fill: $iconDimColor;
+                    }
                 }
+
+
+
+
             }
         }
 
@@ -298,6 +356,10 @@ $hoverbgColor: #282828;
         margin-top: 30px;
         height: auto;
         list-style-type: none;
+        height: 100%;
+        list-style-type: none;
+        overflow-y: scroll;
+        padding-bottom: 200px;
 
         & li {
             height: 30px;
@@ -313,10 +375,31 @@ $hoverbgColor: #282828;
                 color: #fff;
             }
             & a {
+                display: block;
                 color: $profileNavDimText;
                 text-decoration: none;
+                width: 100%;
+                padding: 8px 4px 8px 0px;
+                width: calc(98%);
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+                //background: green;
+
+                &:hover {
+                    color: #fff;
+                }
             }
         }
+
+        &::-webkit-scrollbar {
+            width: 11px;
+            background-color: $blackMainColor; /* or add it to the track */
+          }
+
+        &::-webkit-scrollbar-thumb {
+            background: #4D4D4D;
+          }
     }
 }
 
@@ -568,6 +651,7 @@ $hoverbgColor: #282828;
 
     .MA_header{
         //background-color: $blackMainColor;
+        grid-area: 1/2/2/3;
         height: 65px;
         color: inherit;
         padding: 0px 24px;
@@ -575,8 +659,8 @@ $hoverbgColor: #282828;
         grid-template-columns: 1fr;
         grid-template-rows: 1fr;
         grid-template-areas: "MA_headerprofilebtnnav";
-        background: none;
-        background: none !important;
+        //background: none;
+        //background: none !important;
         & .MA_logoTextContainer{
             grid-area: MA_logotext;
             justify-self: start;
@@ -751,9 +835,13 @@ $hoverbgColor: #282828;
         //border: 1px solid green;
         z-index: 99;
         position: relative;
-        max-height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        //max-height: 100vh;
         height: 100%;
         width: 100%;
+        width: 215px;
         padding-right: 0px;
         //background: #fff;
         //display: none;
@@ -795,53 +883,119 @@ $hoverbgColor: #282828;
             & li {
                 justify-content: start;
                 display: grid;
-                grid-template-columns: auto 1fr;
+                grid-template-columns: 1fr;
                 grid-gap: 15px;
                 align-items: center;
                 height: 40px;
                 cursor: pointer;
+            /* ----------LATER ADDITION ----------*/
+            & a.MA_navLink{
+                //background: red;
+                height: 100%;
+                width: 100%;
+                display: grid;
+                grid-template-columns: auto 1fr;
+                justify-items: center;
+                align-items: center;
+                grid-gap: 15px;
 
-                & div {
+                &:hover > span.span_navText{
+                    color: #fff;
+                }
+                &:hover > span.span_navIcon svg{
+                    fill: #fff;
+                }
+                span.span_navIcon{
                     align-self: center;
                     display: grid;
                     align-items: center;
                     height: 100%;
                     margin: 0px;
                     font-size: 24px;
+                    color: $iconDimColor;
                     & svg {
                         fill: $iconDimColor;
                     }
-                    &:hover > svg{
-                        fill: #fff;
-                    }
                 }
-
-                & a {
-                    //border: 1px solid red;
+                span.span_navText{
                     justify-self: start;
-                    font-size: 14px;
-                    font-weight: 700;
                     color: $iconDimColor;
                     text-decoration: none;
+                    font-size: 14px;
+                    font-weight: 700;
+                }
+            }
 
-                    &:hover {
-                        color: #fff;
+            & button.PlaylistBTNB {
+                width: 100%;
+                //height: auto;
+                //border: 1px solid red;
+                //background: red;
+                display: grid;
+                grid-template-columns: 26px auto;
+                background: none;
+                border: none;
+                grid-gap: 15px;
+                justify-items: center;
+                padding: 4px 8px 4px 0px;
+                cursor: pointer;
+
+                &:hover > span.MA_navPLusIcon{
+                    background-color: #fff;
+                }
+                &:hover > span.MA_navHeartIcon svg {
+                    fill: #fff;
+                }
+                &:hover > span.MA_navLikeda{
+                    color: #fff;
+                }
+                & span.MA_navPLusIcon{
+                    border-radius: 2px;
+                    font-size: 12px;
+                    height: 25px;
+                    width: 25px;
+                    //border: 1px solid red;
+                    display: grid;
+                    @include GridParentCentering;
+                    background: $iconDimColor;
+                    justify-self: start;
+
+                    & svg {
+                        fill: #000;
                     }
                 }
 
-                & a.MA_navLikeda{
+                & span.MA_navLikeda{
+                    justify-self: start;
+                    align-self: center;
                     font-size: 14px;
                     font-weight: 800;
                 }
-                // heart icon
-                & div.MA_navHeartIcon{
+
+                & span.MA_navHeartIcon {
+                    border-radius: 2px;
                     font-size: 12px;
                     height: 25px;
                     width: 25px;
                     //border: 1px solid red;
                     @include GridParentCentering;
-                    background: linear-gradient(to bottom right, #462FA6, #798C9A)
+                    background: linear-gradient(to bottom right, #462FA6, #798C9A);
+                    color: $iconDimColor;
+                    display: grid;
+                    justify-items: center;
+                    align-items: center;
+                    justify-self: start;
+                    & svg {
+                        fill: $iconDimColor;
+                    }
                 }
+
+
+
+
+            }
+
+                
                 
             }
 
@@ -854,8 +1008,9 @@ $hoverbgColor: #282828;
         & ul.MA_navBot{
             position: relative;
             margin-top: 30px;
-            height: auto;
+            height: 100%;
             list-style-type: none;
+            overflow-y: scroll;
 
             & li {
                 height: 30px;
@@ -882,9 +1037,9 @@ $hoverbgColor: #282828;
         }
     }
 
-    
     // --> control this later on with chilld contianers
     .MA_outletContainer{
+        grid-area: 2/2/3/3;
         width: 100%;
         height: auto;
         //padding: 30px 10px;

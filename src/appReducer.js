@@ -2,7 +2,7 @@ const InitialState = {
     user: null,
     home: [],
     search: {},
-    likedSongs: {},
+    likedSongs: null,
     playlists: [],
     musicPlayer: null
 }
@@ -75,6 +75,11 @@ export default function appReducer(state, action){
             return {
                 ...state,
                 playlists: action.payload
+            }
+        case 'SET_SAVEDTRACKS':
+            return {
+                ...state, 
+                likedSongs: action.payload
             }
         case "SET_MUSICPLAYER":
             return {

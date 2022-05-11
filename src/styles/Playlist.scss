@@ -20,7 +20,7 @@ $SpotifyGreen: #1ed760;
 .PL_mainContainer{
     /* NOTE --Padding in the child Components instead */
     //padding: 30px 10px;
-    padding-bottom: 50px;
+    padding-bottom: 150px;
     color: #fff;
     background-color: $OutletBackground;
     display: grid;
@@ -39,7 +39,7 @@ $SpotifyGreen: #1ed760;
     padding: 30px 10px;
 }
 //fix;
-.PL_playlistsDIV, .PL_mainPlayButtonCont{
+.PL_playlistsDIV, .PL_mainPlayButtonCont,.PL_LikedboolNone {
     padding: 0px 10px;
 }
 
@@ -113,30 +113,138 @@ $SpotifyGreen: #1ed760;
      }
 }
 
-  /* Main PLayButton */
+/* Main PLayButton */
 div.PL_mainPlayButtonCont{
     width: 100%;
     background: $OutletBackground;
     height: 80px;
-    border-bottom: .5px solid rgb(63, 48, 48);
+    border-bottom: .5px solid rgb(96, 89, 89);
     @include CenteringLeft;
-
-    & button{
+    grid-template-columns: repeat(auto-fill, 50px);
+    grid-column-gap: 25px;
+    & button, & div button.PL_playBtnEllipsis{
         height: 45px;
         width: 45px;
         font-size: 18px;
-        background-color: $SpotifyGreen;
-        color: #000;
         border-radius: 50%;
         border: none;
         //padding-left: 5px;
         @include CenteringMid;
+    }
+
+    & button.PL_mainPlayButton{
+        background-color: $SpotifyGreen;
+        color: #000;
         & svg {
             fill: #000;
         }
     }
-}
 
+
+    & div {
+        & button.PL_playBtnEllipsis{
+            position: relative;
+            background: none;
+            display: grid;
+            grid-template-columns: 4px 4px 4px;
+            justify-content: start;
+            grid-column-gap:5px;
+            & div{
+                height: 4px;
+                width: 4px;
+                background: $textDescriptionColor;
+                border-radius: 50%;
+            }
+        }
+
+        & ul.PL_PlayULC{
+            position: absolute;
+            display: grid;
+            grid-template-columns:1fr;
+            grid-auto-rows: auto;
+            top: 45px;
+            left: 0px;
+            background: #282828;
+            z-index: 9;
+            padding: 4px;
+            border-radius: 4px;
+    
+    
+            & li {
+    
+                &:hover{
+                    background-color: rgb(59, 58, 58);
+                }
+                list-style-type: none;
+                height: 43px;
+                width: 200px;
+                border-radius: 4px;
+                overflow: hidden;
+                & button {
+                    width: 100%;
+                    height: 100%;
+                    padding: 12px 12px 12px 12px;
+                    background-color: inherit;
+                    border: none;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #EAEAEA;
+                    display: grid;
+                    justify-items: start;
+                    //text-align: start;
+                    //white-space: nowrap;
+                    
+                }
+            }
+    
+            & li.PL_ULC_9UL_CopyLink{
+                border-top: 0.2px solid rgb(75, 72, 72);
+            }
+        }
+    }
+}
+div.PL_LikedboolNone{
+
+    ul.PL_LikedboolUL {
+        width: 100%;
+        height: auto;
+        list-style-type: none;
+        & li {
+            width: 100%;
+            display: grid;
+            justify-items: center;
+            align-items: center;
+            margin-bottom: 30px;
+            // icon font-size
+            font-size: 30px;
+            & h2 {
+                font-size: 18px;
+                font-weight: 700;
+            }
+
+            & p {
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+            & button {
+                background: #fff;
+                border: none;
+                outline: none;
+                border-radius: 25px;
+                font-size: 16px;
+                font-weight: 700;
+                color: #000;
+                padding: 12px 32px;
+            }
+        }
+        & li.PL_LikedboolUL_l1{
+            margin-bottom: 40px;
+        }
+       }   
+
+
+}
 div.PL_playlistsDIV{
     /* list of albums */
     /* search option */
@@ -288,6 +396,15 @@ div.PL_playlistsDIV ul.PL_playListsULROWHeading{
     & li.PL_HL4{
         display: none;
     }
+    & li.PL_HL5{
+        display: none;
+    }
+    & li.PL_HL6{
+        display: none;
+    }
+    & li.PL_HL7{
+        display: none;
+    }
 }
 
 /* NESTESD ULS */
@@ -317,7 +434,12 @@ div.PL_playlistsDIV ul.PL_playListsULROW{
         /* Image(Playbtn), SongName/artistName-like-option */
         grid-template-columns: auto 1fr auto auto;
         grid-auto-rows: 40px;
-    
+        border-radius: 5px;
+        
+
+        &:hover{
+            background-color: rgb(59, 58, 58, 0.5);
+        }
         & li {
             height: 100%;
         }
@@ -336,12 +458,15 @@ div.PL_playlistsDIV ul.PL_playListsULROW{
             top: 50%;
             transform: translateY(-50%);
             // padding + imageCOontMid 10+30
-            left: 20px;
-            height: 20px;
+            left: 10px;
+            height: 40px;
+            width: 40px;
             & button.PL_ULC_7PlayBtn{
                 background: none;
                 border: none;
                 font-size: 16px;
+                width: 100%;
+                height: 100%;
                 & svg {
                     fill: $textDescriptionColor;
                 }
@@ -421,7 +546,7 @@ div.PL_playlistsDIV ul.PL_playListsULROW{
             align-self: center;
             display: grid;
             align-items: center;
-            
+            width: 25px;
             & button.PL_ULC_7LikeBtn{
                 background: none;
                 border: none;
@@ -441,13 +566,17 @@ div.PL_playlistsDIV ul.PL_playListsULROW{
             display: grid;
             align-items: center;
             
-            & button.PL_ULC_7OptionBtn{
+            & button.PL_ULC_7OptionBtn, & button.PL_ULC_7OptionBtn2{
                 background: none;
                 border: none;
                 font-size: 16px;
                 & svg {
                     fill: $textDescriptionColor;
                 }
+            }
+
+            & button.PL_ULC_7OptionBtn2{
+                display:none;
             }
         }
 
@@ -520,6 +649,133 @@ li.PL_ULC_9{
 
 }
 
+div.EditPlaylistMainContainer{
+    padding: 10px;
+    position: fixed;
+    min-height: 100%;
+    z-index: 99999999;
+    width: 100%;
+    background: rgba(0,0,0,0.5);
+    //border: 1px solid red;
+    top: 0;
+    left: 0;
+    div.formContainer{
+        padding: 15px 10px;
+        width:90%;
+        height: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #282828;
+        border-radius: 8px;
+
+        & h2 {
+            font-size: 24px;
+            font-weight:700;
+            padding-bottom: 15px;
+        }
+
+        & p {
+            padding: 10px 12px;
+            width: 100%;
+            border-radius: 4px;
+            height: auto;
+            font-size: 14px;
+            font-weight: 600;
+            background: red;
+            margin-bottom: 15px;
+            display: grid; 
+            align-items: center;
+        }
+        & input {
+            padding: 0px 12px;
+            width : 100%;
+            height: 40px;
+            border-radius: 4px;
+            outline: none;
+            border: none;
+            background: #3E3E3E;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        & button.Form_save {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 800;
+            padding: 14px 32px;
+            border-radius: 25px;
+            color: #000;
+        }
+
+        & button.Form_close{
+            position: absolute;
+            right: 10px;
+            top: 15px;
+            height: 30px;
+            width: 30px;
+            background: none;
+            border: none;
+            outline: none;
+            font-size: 25px;
+            //background: red;
+        }
+    }
+
+
+}
+
+// for form only
+@media only screen and (min-width: 320px) {
+    div.EditPlaylistMainContainer{
+        padding: 24px;
+        div.formContainer{
+            padding: 20px 20px;
+            & h2 {
+                font-size: 24px;
+                font-weight:700;
+                padding-bottom: 15px;
+            }
+    
+            & input {
+                padding: 0px 12px;
+                width : 100%;
+                height: 40px;
+                border-radius: 4px;
+                outline: none;
+                border: none;
+                background: #3E3E3E;
+                font-size: 14px;
+                font-weight: 500;
+            }
+    
+            & button.Form_save {
+                margin-top: 10px;
+                font-size: 16px;
+                font-weight: 800;
+                padding: 14px 32px;
+                border-radius: 25px;
+                color: #000;
+            }
+    
+            & button.Form_close{
+                position: absolute;
+                right: 20px;
+                top: 15px;
+                height: 30px;
+                width: 30px;
+                background: none;
+                border: none;
+                outline: none;
+                font-size: 25px;
+                line-height: 1.5;
+            }
+        }
+    
+    
+    }
+}
 // padding: 30px 24px;
 @media only screen and (min-width: 420px){
     .PL_topMainContainer, .PL_PlaylistsDIV{
@@ -534,7 +790,7 @@ li.PL_ULC_9{
     /* UL LIST HEADING-ROW */
     div.PL_playlistsDIV ul.PL_playListsULROWHeading{
         display: grid;
-        grid-template-columns: 1fr 60px;
+        grid-template-columns: 40px 1fr auto auto auto;
         grid-column-gap: 16px;
         li{
         }
@@ -543,16 +799,28 @@ li.PL_ULC_9{
             display: none;
         }
         & li.PL_HL2{
+            grid-area: 1/1/2/3;
         }
         & li.PL_HL3{
             display: none;
         }
         & li.PL_HL4{
+            display: none;
+        }
+        & li.PL_HL5{
+            display: block;
+            width: 25px;
+        }
+        & li.PL_HL6{
             display: block;
             font-size: 16px;
             & svg {
                 fill: $textDescriptionColor;
             }
+        }
+        & li.PL_HL7{
+            display: block;
+            width: 30px;
         }
     }
     /* NESTESD ULS */
@@ -669,14 +937,62 @@ li.PL_ULC_9{
 
         }
     }
+    /* FORM */
+    div.EditPlaylistMainContainer{
+        padding: 24px;
+        div.formContainer{
+            padding: 24px 24px;
+            width: 320px;
+            & h2 {
+                font-size: 24px;
+                font-weight:700;
+                padding-bottom: 20px;
+            }
+    
+            & input {
+                padding: 0px 12px;
+                width : 100%;
+                height: 40px;
+                border-radius: 4px;
+                outline: none;
+                border: none;
+                background: #3E3E3E;
+                font-size: 14px;
+                font-weight: 500;
+            }
+    
+            & button.Form_save {
+                margin-top: 15px;
+                font-size: 16px;
+                font-weight: 800;
+                padding: 14px 32px;
+                border-radius: 25px;
+                color: #000;
+            }
+            & button.Form_close{
+                position: absolute;
+                right: 24px;
+                top: 20px;
+                height: 40px;
+                width: 40px;
+                background: none;
+                border: none;
+                outline: none;
+                font-size: 25px;
+                line-height: 1.5;
+            }
+        }
+    
+    
+    }
     
 }
 
 @media only screen and (min-width: 576px){
-        /* UL LIST HEADING-ROW */
+        /* ul HEADING */
         div.PL_playlistsDIV ul.PL_playListsULROWHeading{
             display: grid;
-            grid-template-columns: 1fr 140px 60px;
+            grid-template-columns: 40px 1fr 140px auto auto auto;
             grid-column-gap: 16px;
             li{
             }
@@ -685,16 +1001,29 @@ li.PL_ULC_9{
                 display: none;
             }
             & li.PL_HL2{
+                grid-area: 1/1/2/3;
             }
             & li.PL_HL3{
                 display: block;
+                width: 140px;
             }
             & li.PL_HL4{
+                display: none;
+            }
+            & li.PL_HL5{
+                display: block;
+                width: 25px;
+            }
+            & li.PL_HL6{
                 display: block;
                 font-size: 16px;
                 & svg {
                     fill: $textDescriptionColor;
                 }
+            }
+            & li.PL_HL7{
+                display: block;
+                width: 30px;
             }
         }
         /* NESTESD ULS */
@@ -772,7 +1101,8 @@ li.PL_ULC_9{
                         font-size: 14px; 
                         font-weight: 600;
                         color: $textDescriptionColor;
-                        width: 100%;
+                        width: calc(98%);
+                        display: inline;
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: nowrap;
@@ -800,13 +1130,19 @@ li.PL_ULC_9{
                     align-items: center;
                     
                     & button.PL_ULC_7OptionBtn{
-                        background: none;
-                        border: none;
-                        font-size: 16px;
-                        & svg {
-                            fill: $textDescriptionColor;
-                        }
+                        display: none;
                     }
+        
+                    & button.PL_ULC_7OptionBtn2{
+                        display:block;
+                        width: 30px;
+                    }
+                }
+                
+
+                /* FOR SEARCH SECTION */
+                & li.PL_ULC_10{
+                    grid-area: 1/4/1/7;
                 }
     
                 
@@ -814,6 +1150,765 @@ li.PL_ULC_9{
     
             }
         }
+}
+
+
+@media only screen and (min-width: 768px){
+
+    .PL_topMainContainer{
+        //padding fix
+        padding-bottom: 15px;
+        background: linear-gradient(to bottom,#4F4F4F, #282828);
+        height: auto;
+        padding-top: 110px;
+        padding-bottom: 30px;
+        display: grid;
+        grid-template-columns: 190px 1fr;
+        grid-template-rows: 190px;
+        grid-column-gap: 20px;
+        & .PL_topImageContainer{
+            height: 100%;
+            width: 100%;
+            background: #000;
+            border-radius: 5px;
+            /* IF IMAGE */
+            & img{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+    
+             /* IF NO - IMAGE */
+             & div {
+                box-shadow: 0px 2px 0px rgba(0,0,0,0.3);
+                border-radius: 5px;
+                height: 100%;
+                width: 100%;
+                display: grid;
+                justify-items: center;
+                align-items: center;
+                font-size: 80px;
+                background-color: #282828;
+                & svg {
+                    fill: $textDescriptionColor;
+                }
+             }
+        }
+    
+         /* Playlist description */
+         & .PL_descriptionContainer{
+            display: grid;
+            grid-template-columns:auto auto auto 1fr;
+            grid-template-rows: auto auto auto;
+            grid-column-gap: 8px;
+            align-content: end;
+            // commmon p
+            & p {
+                font-size: 15px;
+                font-weight: 500;
+            }
+            & p.PL_desTitle{
+                grid-area: 1/1/2/5;
+                display: grid;
+                font-weight: 700;
+                font-size: 13px;
+                text-transform: uppercase;
+            }
+    
+            & h2.PL_desPlaylistName{
+                grid-area: 2/1/3/5;
+                font-size: 34px;
+                font-weight: 800;
+                width: 100%;
+                height: auto;
+                //height: 50px;
+                //background-color: red;
+                display: grid;
+                align-items: center;
+                padding-bottom: 5px;
+                width: calc(95%);
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+            p.PL_desProfileName{
+                font-size: 14px;
+                font-weight: 700;
+            }
+    
+            p.PL_desSongsLength{
+                color: $textDescriptionColor;
+            }
+    
+         }
+    }
+
+    div.PL_mainPlayButtonCont{
+        @include CenteringLeft;
+        height: auto;
+        grid-template-columns: repeat(auto-fill, 60px);
+        grid-column-gap: 25px;
+        padding-top: 24px;
+        padding-bottom: 24px;
+        & button{
+            height: 55px;
+            width: 55px;
+            font-size: 20px;
+            //padding-left: 5px;
+            @include CenteringMid;
+        }
+    
+        & button.PL_mainPlayButton{
+            background-color: $SpotifyGreen;
+            color: #000;
+            & svg {
+                fill: #000;
+            }
+        }
+    
+        & button.PL_playBtnEllipsis{
+            display: grid;
+            grid-template-columns: 4px 4px 4px;
+            justify-content: start;
+            grid-column-gap:5px;
+            padding-left: 5px;
+            &:hover > * {
+                background: #fff;
+            }
+            & div{
+            }
+        }
+    }
+    div.PL_LikedboolNone{
+
+        ul.PL_LikedboolUL {
+            width: 100%;
+            height: auto;
+            list-style-type: none;
+            & li {
+                width: 100%;
+                display: grid;
+                justify-items: center;
+                align-items: center;
+                margin-bottom: 30px;
+                // icon font-size
+                font-size: 30px;
+                & h2 {
+                    font-size: 30px;
+                    font-weight: 700;
+                }
+    
+                & p {
+                    font-size: 14px;
+                    font-weight: 500;
+                }
+    
+                & button {
+                    background: #fff;
+                    border: none;
+                    outline: none;
+                    border-radius: 25px;
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #000;
+                    padding: 12px 32px;
+                }
+            }
+            & li.PL_LikedboolUL_l1{
+                margin-bottom: 40px;
+            }
+           }   
+    
+    
+    }
+
+    
+}
+
+/* font -size only */
+@media only screen and (min-width: 900px){
+
+    .PL_topMainContainer{
+        //padding fix
+        display: grid;
+        grid-template-columns: 190px 1fr;
+        grid-template-rows: 190px;
+        grid-column-gap: 20px;
+        & .PL_topImageContainer{
+            /* IF IMAGE */
+            & img{
+            }
+    
+             /* IF NO - IMAGE */
+             & div {
+                display: grid;
+                justify-items: center;
+                align-items: center;
+                font-size: 90px;
+                background-color: #282828;
+                & svg {
+                    fill: $textDescriptionColor;
+                }
+             }
+        }
+    
+         /* Playlist description */
+         & .PL_descriptionContainer{
+            display: grid;
+            grid-template-columns:auto auto auto 1fr;
+            grid-template-rows: auto auto auto;
+            grid-column-gap: 8px;
+            align-content: end;
+            // commmon p
+            & p {
+                font-size: 15px;
+                font-weight: 500;
+            }
+            & p.PL_desTitle{
+                grid-area: 1/1/2/5;
+                display: grid;
+                font-weight: 700;
+                font-size: 13px;
+            }
+    
+            & h2.PL_desPlaylistName{
+                grid-area: 2/1/3/5;
+                font-size: 70px;
+                font-weight: 800;
+                height: auto;
+                //height: 50px;
+                //background-color: red;
+                display: inline;
+                align-items: center;
+                padding-bottom: 5px;
+                width: calc(95%);
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+            p.PL_desProfileName{
+                font-size: 14px;
+                font-weight: 700;
+            }
+    
+            p.PL_desSongsLength{
+                color: $textDescriptionColor;
+            }
+    
+         }
+    }
+    div.PL_LikedboolNone{
+
+        ul.PL_LikedboolUL {
+            width: 100%;
+            height: auto;
+            list-style-type: none;
+            & li {
+                width: 100%;
+                display: grid;
+                justify-items: center;
+                align-items: center;
+                margin-bottom: 30px;
+                // icon font-size
+                font-size: 30px;
+                & h2 {
+                    font-size: 30px;
+                    font-weight: 700;
+                }
+    
+                & p {
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+    
+                & button {
+                    background: #fff;
+                    border: none;
+                    outline: none;
+                    border-radius: 25px;
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #000;
+                    padding: 12px 36px;
+                    cursor: pointer;
+                }
+            }
+            & li.PL_LikedboolUL_l1{
+                margin-bottom: 40px;
+                font-size: 50px !important;
+            }
+           }   
+    
+    
+    }
+
+    
+}
+
+/* font -size only */
+@media only screen and (min-width: 992px){
+        /* ul HEADING */
+        div.PL_playlistsDIV ul.PL_playListsULROWHeading{
+            display: grid;
+            grid-template-columns: 30px 40px 1fr 200px auto auto auto;
+            grid-column-gap: 16px;
+            li{
+            }
+    
+            & li.PL_HL1{
+                display: grid;
+                width: 100%;
+                justify-items: center;
+                align-items: center;
+                font-weight: 700;
+                font-size: 16px;
+                
+            }
+            & li.PL_HL2{
+                grid-area: 1/2/2/4;
+            }
+            & li.PL_HL3{
+                display: block;
+                width: 200px;
+            }
+            & li.PL_HL4{
+                display: none;
+            }
+            & li.PL_HL5{
+                display: block;
+                width: 25px;
+            }
+            & li.PL_HL6{
+                width: 40px;
+                display: block;
+                font-size: 16px;
+                & svg {
+                    fill: $textDescriptionColor;
+                }
+            }
+            & li.PL_HL7{
+                display: block;
+                width: 30px;
+            }
+        }
+          /* NESTESD ULS */
+          div.PL_playlistsDIV ul.PL_playListsULROW{
+            align-items: center;
+            min-height: 0px;
+            min-width: 0px;
+            &:hover {
+            
+            }
+            /* PL_playListLROW */
+            & li.PL_playListLROW{
+                /*----------*/
+                /*COLUMN UL*/
+                /*----------*/
+            & ul.PL_playListULColumn{
+                display: grid;
+                grid-column-gap: 16px;
+                /* ADDING SONGS TIME LENGTH */
+                 /* ADDING ALBUM OR PODCAST */
+                /* Image(Playbtn), SongName/artistName-like-option */
+                grid-template-columns: auto auto 1fr 200px auto auto auto;
+                grid-auto-rows: 40px;
+            
+    
+                & li {
+                    height: 100%;
+                    font-size: 16px;
+                    font-weight: 500;
+                    color: $textDescriptionColor;
+                }
+    
+                /* NUMBER */
+                & li.PL_ULC_1{
+                    display: none;
+    
+                }
+    
+                /* PlayBTN */
+                & li.PL_ULC_2{
+
+                    z-index: 9;
+                    //PL_ULC_7PlayBtn
+                    position: relative;
+                    top: 0px;
+                    left: 0px;
+                    transform:none;
+                    // padding + imageCOontMid 10+30
+                    height: 40px;
+                    width: 30px;
+                    & button.PL_ULC_7PlayBtn{
+                        background: none;
+                        border: none;
+                        font-size: 15px;
+                        width: 100%;
+                        height: 100%;
+                        & svg {
+                            fill: $textDescriptionColor;
+                        }
+                    }
+                }
+    
+                /* SIDEICON-MUSIC?PODCAST */
+                & li.PL_ULC_3{
+                    display: none;
+                }
+    
+                /*ALBUM IMAGE-COVER*/
+                & li.PL_ULC_4{
+    
+                }
+                /* SONG NAME */
+                & li.PL_ULC_5{
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    grid-template-rows: auto auto;
+                    align-content: center;
+                    & h3 {
+                    }
+                    & div {
+                        & a {  
+                            font-size: 14px; 
+                            font-weight: 600; 
+                        }
+                    }
+                }
+            
+                /* ALBUM OR PODCAST */
+                & li.PL_ULC_6{
+                    display: grid;
+                    width: 100%;
+                    align-items: center;
+                    & h3 {
+                        /* same as Artists names */
+                        font-size: 14px; 
+                        font-weight: 600;
+                        color: $textDescriptionColor;
+                        width: calc(98%);
+                        display: inline;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                }
+                /* LIKE OR NOT */
+                & li.PL_ULC_7{
+                    & button.PL_ULC_7LikeBtn{
+                        & svg {
+                        }
+                    }
+                }
+                /* Length */
+                & li.PL_ULC_8{
+                    display: grid;
+                    align-items: center;
+                    height: 35px;
+                    font-size: 14px; 
+                    font-weight: 600;
+                }
+                /* MORE OPTION BUTTON */
+                & li.PL_ULC_9{
+                    align-self: center;
+                    display: grid;
+                    align-items: center;
+                    
+                    & button.PL_ULC_7OptionBtn{
+                        display: none;
+                    }
+        
+                    & button.PL_ULC_7OptionBtn2{
+                        display:block;
+                        width: 30px;
+                    }
+                }
+
+                & li.PL_ULC_10{
+                    grid-area: 1/5/1/8;
+                    width: 200px;
+                    display: grid;
+                    justify-items: end;
+                    align-items: center;
+                    
+                }
+    
+    
+                
+            }
+    
+            }
+        }
+}
+
+
+@media only screen and (min-width: 1200px){
+    .PL_topMainContainer{
+        //padding fix
+        padding-bottom: 15px;
+        background: linear-gradient(to bottom,#4F4F4F, #282828);
+        height: auto;
+        padding-top: 110px;
+        padding-bottom: 30px;
+        display: grid;
+        grid-template-columns: 230px 1fr;
+        grid-template-rows: 230px;
+        grid-column-gap: 20px;
+        & .PL_topImageContainer{
+            height: 100%;
+            width: 100%;
+            background: #000;
+            border-radius: 5px;
+            /* IF IMAGE */
+            & img{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+    
+             /* IF NO - IMAGE */
+             & div {
+                box-shadow: 0px 2px 0px rgba(0,0,0,0.3);
+                border-radius: 5px;
+                height: 100%;
+                width: 100%;
+                display: grid;
+                justify-items: center;
+                align-items: center;
+                font-size: 100px;
+                background-color: #282828;
+                & svg {
+                    fill: $textDescriptionColor;
+                }
+             }
+        }
+    
+         /* Playlist description */
+         & .PL_descriptionContainer{
+            display: grid;
+            grid-template-columns:auto auto auto 1fr;
+            grid-template-rows: auto auto auto;
+            grid-column-gap: 8px;
+            align-content: end;
+            // commmon p
+            & p {
+                font-size: 15px;
+                font-weight: 500;
+            }
+            & p.PL_desTitle{
+                grid-area: 1/1/2/5;
+                display: grid;
+                font-weight: 700;
+                font-size: 13px;
+            }
+    
+            & h2.PL_desPlaylistName{
+                grid-area: 2/1/3/5;
+                font-size: 90px;
+                font-weight: 800;
+                height: auto;
+                //height: 50px;
+                //background-color: red;
+                display: inline;
+                align-items: center;
+                padding-bottom: 5px;
+                width: calc(95%);
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+            p.PL_desProfileName{
+                font-size: 14px;
+                font-weight: 700;
+            }
+    
+            p.PL_desSongsLength{
+                color: $textDescriptionColor;
+            }
+    
+         }
+    }
+    div.PL_playlistsDIV ul.PL_playListsULROWHeading{
+        display: grid;
+        grid-template-columns: 30px 40px 1fr 400px auto auto auto;
+        //grid-template-columns: auto auto 1fr 400px auto auto auto;
+        grid-column-gap: 16px;
+        li{
+        }
+
+        & li.PL_HL1{
+            display: grid;
+            width: 100%;
+            justify-items: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 16px;
+            
+        }
+        & li.PL_HL2{
+            grid-area: 1/2/2/4;
+        }
+        & li.PL_HL3{
+            display: block;
+            width: 400px;
+        }
+        & li.PL_HL4{
+            display: none;
+        }
+        & li.PL_HL5{
+            display: block;
+            width: 25px;
+        }
+        & li.PL_HL6{
+            display: block;
+            font-size: 16px;
+            & svg {
+                fill: $textDescriptionColor;
+            }
+        }
+        & li.PL_HL7{
+            display: block;
+            width: 30px;
+        }
+    }
+    /* NESTESD ULS */
+    div.PL_playlistsDIV ul.PL_playListsULROW{
+    align-items: center;
+    min-height: 0px;
+    min-width: 0px;
+    &:hover {
+    
+    }
+    /* PL_playListLROW */
+    & li.PL_playListLROW{
+        /*----------*/
+        /*COLUMN UL*/
+        /*----------*/
+    & ul.PL_playListULColumn{
+        display: grid;
+        grid-column-gap: 20px;
+        /* ADDING SONGS TIME LENGTH */
+            /* ADDING ALBUM OR PODCAST */
+        /* Image(Playbtn), SongName/artistName-like-option */
+        grid-template-columns: auto auto 1fr 400px auto auto auto;
+        grid-auto-rows: 40px;
+    
+
+        & li {
+            height: 100%;
+            font-size: 16px;
+            font-weight: 500;
+            color: $textDescriptionColor;
+        }
+
+        /* NUMBER */
+        & li.PL_ULC_1{
+            display: none;
+
+        }
+
+        /* PlayBTN */
+        & li.PL_ULC_2{
+
+            z-index: 9;
+            //PL_ULC_7PlayBtn
+            position: relative;
+            top: 0px;
+            left: 0px;
+            transform:none;
+            // padding + imageCOontMid 10+30
+            height: 40px;
+            width: 30px;
+            & button.PL_ULC_7PlayBtn{
+                background: none;
+                border: none;
+                font-size: 15px;
+                width: 100%;
+                height: 100%;
+                & svg {
+                    fill: $textDescriptionColor;
+                }
+            }
+        }
+
+        /* SIDEICON-MUSIC?PODCAST */
+        & li.PL_ULC_3{
+            display: none;
+        }
+
+        /*ALBUM IMAGE-COVER*/
+        & li.PL_ULC_4{
+
+        }
+        /* SONG NAME */
+        & li.PL_ULC_5{
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto;
+            align-content: center;
+            & h3 {
+            }
+            & div {
+                & a {  
+                    font-size: 14px; 
+                    font-weight: 600; 
+                }
+            }
+        }
+    
+        /* ALBUM OR PODCAST */
+        & li.PL_ULC_6{
+            display: grid;
+            width: 100%;
+            align-items: center;
+            & h3 {
+                /* same as Artists names */
+                font-size: 14px; 
+                font-weight: 600;
+                color: $textDescriptionColor;
+                width: calc(98%);
+                display: inline;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+        /* LIKE OR NOT */
+        & li.PL_ULC_7{
+            & button.PL_ULC_7LikeBtn{
+                & svg {
+                }
+            }
+        }
+        /* Length */
+        & li.PL_ULC_8{
+            display: grid;
+            align-items: center;
+            height: 35px;
+            font-size: 14px; 
+            font-weight: 600;
+        }
+        /* MORE OPTION BUTTON */
+        & li.PL_ULC_9{
+            align-self: center;
+            display: grid;
+            align-items: center;
+            
+            & button.PL_ULC_7OptionBtn{
+                display: none;
+            }
+
+            & button.PL_ULC_7OptionBtn2{
+                display:block;
+                width: 30px;
+            }
+        }
+
+        
+    }
+
+    }
+}
 }
 
 

@@ -19,7 +19,12 @@ const navigate = useNavigate()
 const [catLink, setCatLink] = useState(null);
 useEffect(() => {
     if(name){
-        setCatLink(name)
+        if(name === "hiphop"){
+            setCatLink("hip-hop")
+        }
+        else{
+            setCatLink(name)
+        }
     }
 },[])
 

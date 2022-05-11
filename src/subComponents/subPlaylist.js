@@ -10,11 +10,13 @@ import {
 import {
     FaHeart,
     FaEllipsisV,
+    FaEllipsisH,
     FaPlay} from "react-icons/fa"
 
 /******PLAYLIST_SEARCH*******/
 export function PlaylistSearch({
     external,
+    likedSongsBool,
     searchFix,
     findMore,
     setFindMore,
@@ -81,7 +83,7 @@ export function PlaylistSearch({
         </>
     ) 
 
-    if(external) return null
+    if(external || likedSongsBool) return null
     return(
         <div 
             className = {(findMore && searchFix) ? 
@@ -104,9 +106,12 @@ export function PlaylistSongsList(props){
         external,
         track, 
         searchSectionBool,
+        likedSongsBool,
         addTrackToPlaylistHandler,
         index,
         removeTrackFromPlaylistHandler,
+        removeLikedSongsHandler,
+        addLikedSongsHandler,
         musicDispatchHandler
     } = props;
     const [dropDownBool, setDropDownBool] = useState(false);
@@ -122,13 +127,17 @@ export function PlaylistSongsList(props){
     const time = milliSecondToTime(duration_ms); 
     /* Checking for the liked song */
     useEffect(() => {
-        spotifyApi.containsMySavedTracks([track.id])
-        .then(liked => {
-            setLiked(liked[0])
-        })
-        .catch(error => {
-            setLiked(false)
-        })
+        if(!likedSongsBool){
+            spotifyApi.containsMySavedTracks([track.id])
+            .then(liked => {
+                setLiked(liked[0])
+            })
+            .catch(error => {
+                setLiked(false)
+            })
+        }else{
+            setLiked(true)
+        }
     }, [])
 
     function saveRemoveSongsHandler(id, action){
@@ -137,6 +146,7 @@ export function PlaylistSongsList(props){
            spotifyApi.addToMySavedTracks([id])
            .then(response => {
              setLiked(true)  
+             addLikedSongsHandler(id)
            })
            .catch(error => {
                return null;
@@ -146,7 +156,10 @@ export function PlaylistSongsList(props){
         if(action ==="REMOVE"){
             spotifyApi.removeFromMySavedTracks([id])
             .then(response => {
-                setLiked(false)  
+                setLiked(false) 
+                if(likedSongsBool){
+                    removeLikedSongsHandler(id)
+                }
             })
             .catch(error => {
                 return null
@@ -260,6 +273,15 @@ export function PlaylistSongsList(props){
                                     >
                                     <FaEllipsisV/>
                                 </button>
+
+                                <button 
+                                    className="PL_ULC_7OptionBtn2"
+                                    onClick={(e) => {
+                                        setDropDownBool(true)
+                                    }}
+                                    >
+                                    <FaEllipsisH/>
+                                </button>
                             {/* Drop Down */}
 
                             {dropDownBool && 
@@ -268,11 +290,13 @@ export function PlaylistSongsList(props){
                                 id = {id}
                                 dropDownBool = {dropDownBool}
                                 setDropDownBool = {setDropDownBool}
+                                likedSongsBool = {likedSongsBool}
                                 liked = {liked}
                                 external_urls = {track.external_urls || " "}
                                 /* Methods */
                                 saveRemoveSongsHandler = {saveRemoveSongsHandler}
                                 removeTrackFromPlaylistHandler = {removeTrackFromPlaylistHandler}
+                                removeLikedSongsHandler = {removeLikedSongsHandler}
                                 trackUri = {track.uri}
                                 trackType = {track.type}
                                 />}
@@ -302,12 +326,14 @@ function ListDropdown(props){
         id, 
         dropDownBool,
         setDropDownBool,
+        likedSongsBool,
         fixDropDownMethod,
         trackUri,
         trackType,
         liked,
         external_urls,
         removeTrackFromPlaylistHandler,
+        removeLikedSongsHandler,
         saveRemoveSongsHandler
         } = props;
     const ListDropdownRef = useRef(null)
@@ -334,7 +360,7 @@ function ListDropdown(props){
         ref = {ListDropdownRef}
         >
         
-        {external ? 
+        {external || likedSongsBool? 
             null: 
             <li>
                 <button
@@ -380,4 +406,182 @@ function ListDropdown(props){
     </ul>
     )
 }
+
+/*****PlayBtnDropdown*** */
+export function PlayBtnDropdown(props){
+    const playbtnRef = useRef();
+    const {
+        setPlaybtnDropBool,
+        external,
+        setEditPlaylistBool,
+        playlistLink,
+        deletePlaylistHandler
+        
+    }= props;
+
+    function outsideClickListPlayDropDownHandler(e){
+        if(playbtnRef && !playbtnRef.current.contains(e.target)){
+            setTimeout(() => {
+                setPlaybtnDropBool(false)
+            },12)
+           
+        }
+    }
+    useEffect(() => {
+        window.addEventListener("click", outsideClickListPlayDropDownHandler, true)
+
+        return (() => {
+            window.removeEventListener("click", outsideClickListPlayDropDownHandler, true)
+        })
+    },[])
+
+    return(
+        <ul 
+            className = "PL_PlayULC"
+            ref = {playbtnRef}
+            >
+
+
+            {external ? 
+            
+            
+            <li>
+            <button
+                    onClick={(e) => {
+                    // after deleting the playlist
+                        setPlaybtnDropBool(false)
+                        //show recommendations instead
+                    }}>
+                        About recommendations
+                </button>
+            </li>
+            : 
+            <>
+            <li>
+                <button
+                    onClick={(e) => {
+                        //removeTrackFromPlaylistHandler(trackUri)
+                        //setDropDownBool(false)
+                        //opening details
+                        setPlaybtnDropBool(false)
+                        setEditPlaylistBool(true)
+                    }}>
+                        Edit details
+                </button>
+            </li>
+
+            <li>
+                <button
+                        onClick={(e) => {
+                        // after deleting the playlist
+                            //setPlaybtnDropBool(false)
+                            deletePlaylistHandler()
+                            //setPlaybtnDropBool(false)
+                        }}>
+                            Delete
+                    </button>
+            </li>
+            </>
+            
+            }
+            
+            <li className = "PL_ULC_9UL_CopyLink">
+                <button
+                    onClick={(e) => {
+                        //const link = external_urls.spotify;
+                        if(navigator.clipboard){
+                            navigator.clipboard.writeText(playlistLink)
+                            .then((text) => {
+                            //setting  the notification later on
+                            })
+                            .catch(error=> {
+                                // failed
+                                return null
+                            })
+                        }
+                    }}
+                >Share > Copy playlist link</button>
+            </li>
+
+        </ul>
+    )
+}
+
+
+/*****PlayBtnDropdown*** */
+export function EditPlaylist(props){
+    const {
+        setEditPlaylistBool,
+        playlistName,
+        playlistID,
+        playlistNameChangeHandler
+    } = props;
+    const [inputValue, setInputValue] = useState("");
+    const [submitBool, setSubmitBool] = useState(false)
+    const [error, setError] = useState(false)
+
+    useEffect(() => {
+        setInputValue(playlistName)
+    }, [playlistName])
+    function onChangehandler(e){
+        const value = e.target.value
+        if(value.length > 0){
+            setError(false)
+        }
+        setInputValue(value)
+    }
+
+    function submitHandler(){
+        setSubmitBool(true)
+        if(inputValue.length === 0){
+            setError(true)
+            setSubmitBool(false)
+            return null;
+        }
+        // disabling the submit button
+        spotifyApi.changePlaylistDetails(playlistID, {
+            name: inputValue
+        })
+        .then(nameChanged => {
+            // calling the playlist reducerChangeHandler
+            playlistNameChangeHandler(inputValue)
+            setEditPlaylistBool(false)
+        })
+        .catch(error => {
+            if(error) setEditPlaylistBool(false)
+        })
+    }
+    return (
+        <div 
+            className = "EditPlaylistMainContainer">
+            
+            <div 
+            className = "formContainer">
+                <h2>Edit details</h2>
+                {error &&
+                <p>Playlist name is required</p>
+                }
+                <button 
+                    className = "Form_close"
+                    onClick = {e => {setEditPlaylistBool(false)}}
+                    >
+                    <MdClose/>
+                </button>
+                <input 
+                    value = {inputValue}
+                    onChange = {(e) => onChangehandler(e)}
+                    />
+                <button 
+                    disabled = {submitBool} 
+                    onClick = {e => submitHandler()}               
+                    className = "Form_save">
+                    Save
+                </button>
+            </div>
+        </div>
+    )
+}
+
+
+
 

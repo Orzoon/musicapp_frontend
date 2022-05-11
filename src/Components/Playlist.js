@@ -3,20 +3,25 @@ import React, {
     useContext,
     useEffect} from "react";
 
-import {useParams} from "react-router-dom"; 
+import {useParams, useNavigate} from "react-router-dom"; 
 
 /* Importing usePlaylistFindMore Hook */
 import {usePlaylistFindMore} from "../hooks"
 import { spotifyApi, milliSecondToTime } from "../helper";
 import { 
     PlaylistSearch, 
-    PlaylistSongsList } from "../subComponents/subPlaylist";
+    PlaylistSongsList,
+    PlayBtnDropdown,
+    EditPlaylist
+} from "../subComponents/subPlaylist";
 
-import {FaPlay, 
+import {FaPlay,
+    FaEllipsisH, 
+    FaHeart,
     FaPause, 
     FaMusic} from "react-icons/fa";
 
-import {BsMusicNoteBeamed} from "react-icons/bs"
+import {BsMusicNoteBeamed, BsMusicNote} from "react-icons/bs"
 import {BiTime} from "react-icons/bi"
 
 
@@ -29,17 +34,23 @@ const initialSearchValue = {
 export default function Playlist(){
     // getting playlists data ---> ALL Playlists IMP Data
     const {
+        user,
+        likedSongs,
         playlists,
         dispatch} = useContext(AppContext);
     const {playlistID} = useParams();
     // ExternalPlaylist 
-       const [external, setExternal] = useState(null); 
-
+    const [likedSongsBool, setLikedSongsBool] = useState(null);   
+    const [external, setExternal] = useState(null); 
+    const [PlaybtnDropBool, setPlaybtnDropBool] = useState(null)
     // PlaylistGenralData
     const [playListData,setPlayListData] = useState(null);
+    const [likedSongsData, setLikedSongsData] = useState(null);
     const [albums, setAlbums] = useState(null);
+    const [playlistLink, setPlaylistLink] = useState(null)
     const [totalLength, setTotalLength] = useState(0);
     // for request
+    const navigate = useNavigate()
     const [playListloading, setPlayListLoading ] = useState(true);
 
     /* SEARCH SECTION */
@@ -52,12 +63,40 @@ export default function Playlist(){
     } = usePlaylistFindMore(initialSearchValue);
     const [findMore, setFindMore] = useState(false);
     const [searchFix, setSearchFix] = useState(false);
+    const [editPlaylistBool, setEditPlaylistBool] = useState(null)
     /* USEFFECT --> PLAYLIST */
     useEffect(() => {
         /* iF no playlistID */
 
+        // --checking for likedsongs
+        if(playlistID === "likedsongs" && user && likedSongs){
+            const _likedsongsTitleData = {
+                title: "Liked Songs",
+                imageArray: user.images, // --array--uri
+                display_name: user.display_name,
+                totalSongs: likedSongs.total
+            }
 
-        //--check for external first
+            /* getting only Track */
+            // const _tracksArray = likedSongs.items.reduce((accumulator, item) => {
+            //     return [...accumulator, item.track]
+            // }, [])
+
+            const totTrackLength_ms = likedSongs.items.reduce((accumulator, currentItem) => {
+                return accumulator + currentItem.duration_ms
+            },0)
+
+            //setting values
+            setPlayListData(_likedsongsTitleData)
+            setTotalLength(totTrackLength_ms)
+            //---default values--->
+            setExternal(null);
+            setLikedSongsBool(true)
+            setAlbums(likedSongs.items)
+            return 
+        }
+
+        //--check for external second
         if(playlistID.split(":").length > 2){
             const externalParam = playlistID.split(":"); //array
 
@@ -75,9 +114,10 @@ export default function Playlist(){
                         images: playlistOverallData.images,
                         id: playlistOverallData.id
                     }
-
-                    setPlayListData(_playListData)
-                    setExternal(true)
+                    setPlayListData(_playListData);
+                    setLikedSongsBool(null);
+                    setExternal(true);
+                    setPlaylistLink(playlistOverallData.external_urls.spotify)
                     return playlistOverallData.id;
                 })
                  /* tracks */
@@ -155,20 +195,25 @@ export default function Playlist(){
                 })
             }
 
-
             return
+
         }
-
-
 
         /* PUBLIC PLAYLIST */
         /* FILTERING PLAYLIST DATA FROM PLAYLISTID */
         if(playlists.length > 0){
             const playlistGeneralData = playlists.filter((item, index) => item.id.toString() === playlistID.toString());
+            if(!playlistGeneralData){
+                // error page
+            }
+
+
             // saving as an object
             setExternal(false)
-            console.log("playlistData", playListData)
+            setExternal(null);
+            setLikedSongsBool(null)
             setPlayListData(...playlistGeneralData)
+            setPlaylistLink(playlistGeneralData[0].external_urls.spotify)
         }
 
         // getting albums from ID;
@@ -220,7 +265,7 @@ export default function Playlist(){
 
             })
         }
-    }, [playlists, playlistID])
+    }, [playlists,user,playlistID, likedSongs])
 
     
     /* ADD Tracks to PlayLIST */
@@ -293,72 +338,218 @@ export default function Playlist(){
         dispatch({type: "SET_MUSICPLAYER", payload: musicData})
     }
 
-    
+    function removeLikedSongsHandler(id){
+        const _newItems = likedSongs.items.filter(item => item.id.toString() !== id.toString()) 
+        const likedCount = likedSongs.total - 1
+        const _newLikedSongs = {
+            items: _newItems,
+            total: likedCount
+        }
+        dispatch({type: "SET_SAVEDTRACKS", payload: _newLikedSongs})
+    }
 
+    
+    function addLikedSongsHandler(id){
+        const _itemsCopy = [...likedSongs.items] 
+        const _item = albums.filter(item => item.id.toString() === id.toString())[0]
+        const _newItems = [..._itemsCopy,_item]
+        const likedCount = likedSongs.total + 1
+        const _newLikedSongs = {
+            items: _newItems,
+            total: likedCount
+        }
+        dispatch({type: "SET_SAVEDTRACKS", payload: _newLikedSongs})
+    }
+
+    function deletePlaylistHandler(){
+       const _filteredPlaylist = playlists.filter(playlist => playlist.id.toString() !== playlistID)
+       dispatch({type: "SET_PLAYLIST", payload: _filteredPlaylist})
+       navigate("/app/yourlibrary")
+    }
+
+    function playlistNameChangeHandler(nameValue){
+       const newArray = playlists.map(playlist => {
+           if(playlist.id === playlistID){
+                return {...playlist, name: nameValue}
+           }
+           return playlist
+       })
+       // setting new playlists
+       dispatch({type: "SET_PLAYLIST", payload: newArray})
+    }
+    
     /* -->  TODO --> /* NOTE Replace with loading and loading CSS */
     if(!playListData || !albums) return
+    console.log("playlistData", playListData)
+    console.log("playlists", playlists)
     return(
         <div className = "PL_mainContainer">
 
             {/* TOp DESCRIPTION */}
-            <div className="PL_topMainContainer">
+            <div 
+                className="PL_topMainContainer"
+                style = {{
+                    background: likedSongsBool ? "linear-gradient(to bottom right, #513A9F, #2B1F54)" 
+                                :null
+                }}
+                
+                >
                 {/* playlist Image */}
                 <div className = "PL_topImageContainer">
 
-                    {playListData.images.length > 0 ? 
+                    {!likedSongsBool && playListData.images.length > 0 ? 
                         <img src ={playListData.images[0].url} alt="Playlist_cover"/>:
+                        !likedSongsBool ?
                         <div>
                             <BsMusicNoteBeamed/>
                         </div>
-                
+                        : null
+                    }
+
+                    {/* Replace with heartIcon */}
+                    {likedSongsBool ? 
+                        <div style = {
+                            {background: "linear-gradient(to bottom right, #4218B7, #7B8F88)"}
+                        }>
+                            <FaHeart style = {{color: "#fff", fill: "#fff"}} size = {80}/>
+                        </div>: null
                     }
                 </div>
 
+
+
                 {/* Playlist description */}
-                <div className="PL_descriptionContainer">
-                    <p className="PL_desTitle">title</p>
-                    <h2 className="PL_desPlaylistName">{playListData.name}</h2>
-                    <p className="PL_desProfileName">{playListData.owner.display_name}</p>
-                    <p className="PL_desSongNo">{ 
-                        albums &&
-                        albums.length === 1 ? "1 Song"  
-                        :albums.length > 1 ? `${albums.length} Songs`
-                        : albums === null ? "0 Songs"
-                        : "0 Songs"
-                        
-                    } </p>
-                    <p className="PL_desSongsLength">
-                        {milliSecondToTime(totalLength, true)}
-                    </p>
-                </div>
+                {!likedSongsBool &&
+                    <div className="PL_descriptionContainer">
+                        <p className="PL_desTitle">PLAYLIST</p>
+                        <h2 className="PL_desPlaylistName">{playListData.name}</h2>
+                        <p className="PL_desProfileName">{playListData.owner.display_name}</p>
+                        <p className="PL_desSongNo">{ 
+                            albums &&
+                            albums.length === 1 ? "1 Song"  
+                            :albums.length > 1 ? `${albums.length} Songs`
+                            : albums === null ? "0 Songs"
+                            : "0 Songs"
+                            
+                        } </p>
+                        <p className="PL_desSongsLength">
+                            {milliSecondToTime(totalLength, true)}
+                        </p>
+                    </div>
+                }
+
+
+
+                {likedSongsBool &&
+
+                    <div className="PL_descriptionContainer">
+                        <p className="PL_desTitle">playlist</p>
+                        <h2 className="PL_desPlaylistName">Liked Songs</h2>
+                        <p className="PL_desProfileName">{playListData.display_name}</p>
+                        <p className="PL_desSongNo">{ 
+                           playListData && playListData.totalSongs.length === 1 ? "1 liked song"  
+                           :playListData.totalSongs.length > 1 ? `${playListData.totalSongs.length} liked Songs`
+                           : playListData.totalSongs === null ? "0 liked songs"
+                           : "0 liked songs"
+                            
+                        } </p>
+                        <p className="PL_desSongsLength">
+                            {milliSecondToTime(totalLength, true)}
+                        </p>
+                    </div>
+
+                }
             </div>
 
              {/* Main PLayButton */}
-             <div className="PL_mainPlayButtonCont"
-                 style = {albums && albums.length > 0 ? {border: "none"} : {}} 
+            <div className="PL_mainPlayButtonCont"
+                 style = {
+                            {border: 
+                                likedSongsBool && albums.length ===0 ? "none":
+                                albums && albums.length > 0 ? "none" : null,
+                             background: likedSongsBool ? "linear-gradient(to bottom, #21183F, #15131A)" : null
+                            }
+                        } 
              >
+
+                 {/* showing if tracks exists */}
+                 {albums && albums.length > 0 && 
+                          <button 
+                            disabled = {(albums && albums.length > 0) ? false : true}
+                            className="PL_mainPlayButton" 
+                            onClick={(e) => {musicDispatchHandler(albums[0].uri,"play")}}>
+                            <FaPlay/>
+                        </button>
+                 
+                 }  
+
+                 {!likedSongsBool &&
+                    <div className = "PL_PlayULCFIX">
                     <button 
-                        disabled = {(albums && albums.length > 0) ? false : true}
-                        className="PL_mainPlayButton" 
-                        onClick={(e) => {musicDispatchHandler(albums[0].uri,"play")}}
-                        
-                    >
-                        <FaPlay/>
+                        onClick = {e => {
+                            setPlaybtnDropBool(true)
+                        }}                    
+                        className = "PL_playBtnEllipsis">
+                        <div></div>
+                        <div></div>
+                        <div></div>                
                     </button>
+
+                    {PlaybtnDropBool ?  
+                        <PlayBtnDropdown
+                            setPlaybtnDropBool = {setPlaybtnDropBool}
+                            external = {external}
+                            setEditPlaylistBool = {setEditPlaylistBool}
+                            playlistLink = {playlistLink}
+                            deletePlaylistHandler = {deletePlaylistHandler}
+                            
+                        />
+                        : null
+                    
+                    }     
+              </div>
+                 
+                 
+                 }
             </div>
 
+            { likedSongsBool && albums && albums.length === 0 &&
+
+                <div className = "PL_LikedboolNone">
+                    <ul className = "PL_LikedboolUL">
+                        <li className = "PL_LikedboolUL_l1">
+                            <BsMusicNote/>
+                        </li>
+                        <li>
+                            <h2>Songs you like will appear here</h2>
+                        </li>
+                        <li>
+                            <p>Save songs by tapping the heart icon</p>
+                        </li>
+                        <li>
+                            <button onClick={ e => {
+                                navigate("/app/yourlibrary")
+                            }}>
+                                Find songs
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            }
 
             <div className = "PL_playlistsDIV">
-
                 {/* List Heading */}
                 {albums && albums.length> 0 && 
                     <ul className="PL_playListsULROWHeading">
-                        <li className = "PL_HL1"></li>
+                        <li className = "PL_HL1">#</li>
                         <li className = "PL_HL2">Title</li>
                         <li className = "PL_HL3">Albums</li>
-                        <li className = "PL_HL4">
+                        <li className = "PL_HL4"></li>
+                        <li className = "PL_HL5"></li>
+                        <li className = "PL_HL6">  
                             <BiTime size={20}/>
                         </li>
+                        <li className = "PL_HL7"></li>
                     </ul>
                 } 
                 {/* list of albums */}
@@ -378,8 +569,11 @@ export default function Playlist(){
                                         searchSectionBool = {false}
                                         index = {index}
                                         external = {external}
+                                        likedSongsBool = {likedSongsBool}
                                         /* methods */
                                         removeTrackFromPlaylistHandler = {removeTrackFromPlaylistHandler}
+                                        removeLikedSongsHandler = {removeLikedSongsHandler}
+                                        addLikedSongsHandler = {addLikedSongsHandler}
                                         musicDispatchHandler = {musicDispatchHandler}
                                     />
                                     </ul>)
@@ -392,6 +586,7 @@ export default function Playlist(){
                     searchFix = {searchFix}
                     /* values */
                     external = {external}
+                    likedSongsBool = {likedSongsBool}
                     playlistID = {playlistID}
                     findMore = {findMore}  /* Boolean */
                     setFindMore = {setFindMore} /* Boolean */
@@ -422,6 +617,15 @@ export default function Playlist(){
                 }
 
             </div>
+
+        {editPlaylistBool &&
+            <EditPlaylist 
+                setEditPlaylistBool = {setEditPlaylistBool}
+                playlistName = {playListData.name}
+                playlistID = {playListData.id}
+                playlistNameChangeHandler = {playlistNameChangeHandler}
+            />
+        }
         </div>
     )
 } 

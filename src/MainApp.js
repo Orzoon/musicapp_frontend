@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useReducer, useRef} from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 //import SpotifyWebApi from "spotify-web-api-js";
 import appReducer, {InitialState} from "./appReducer";
 // context
@@ -25,7 +25,7 @@ import {AiOutlinePlus} from "react-icons/ai"
 // importing the styles
 import "./styles/MainApp.scss";
 
-const _token = "BQD-mzAGeW71O97yeKNgp0cJg0W63itzoqloRZY9O5zcfImKM7q3qMHGXUtdCtgc1ByZ771xysu_VD6o7PkdDNksgEJ6ya_bOo6lPyQRO9fScOb1i0ARr3I4eVmti-sMttTPDKLDJL8J9_NDQBwsh15HKJy5zsuci_GWV0sGVAM8ktY5VGmFoUDnpO_Qvken3XsdqpIlgJov32vJQ_Zq2XHNLDLH5faAOvCKIsXNn7Rj3IFsVJCaG4bMKT5qczWtofDN8ehUS3B5g6lJhlG040AXkPJSG-Op3RcoTlcfIag";
+const _token = "BQBTGlTqmtG36VDRO569tZcqzDXvl1Lj-l1KKskOG253eI-Pfrg-5jwnn7oPWe8RE-kzy1TblJhzGR4gcGJnXK4ZFEDMCCDdMDQAIS6bDuNC9V3RmDkcQz447N5o47VwEzaZnxwBOdgcWGWQ_l-WAcX0oOLSYt_5J56BfxCHvSOrBClyoMd3p9ErCRiCZnTSstf59hSsxIOnvAlC6lZUgRKQ9GdVKlFRU3u5KYEPigA3drY8V5dyEvvHgX4tBXaTmiYORcSdCBoBoRElYN_wNatKpSQBG82re5fyinidMmw";
 
 
 export default function MainApp(){
@@ -34,10 +34,12 @@ export default function MainApp(){
     const logoutULRef = useRef(null)
     const headerRef = useRef(null);
     const btnRef = useRef(null);
+    const navigate = useNavigate()
     const [{
         user,
         home,
-        playlists, 
+        playlists,
+        likedSongs,
         musicPlayer
     }, dispatch] = useReducer(appReducer, InitialState);
 
@@ -48,8 +50,6 @@ export default function MainApp(){
     useEffect(() => {
 
         //closing the nav on the click
-
-
         setToken(_token)
         if(token){
             spotifyApi.setAccessToken(_token)
@@ -169,10 +169,24 @@ export default function MainApp(){
                 }
                 dispatch({type: "SET_PARTY", payload: _party})
             })
+
+
             /*---- PLAYLISTS-----*/
             /*************/
             /******/
-            
+            spotifyApi.getMySavedTracks({limit: 20})
+            .then(savedTracks =>{
+                //--> savedTracks ---> tracks, totalNO
+                
+                const _tracksArray = savedTracks.items.reduce((accumulator, item) => {
+                    return [...accumulator, item.track]
+                }, [])
+                const _savedTracksData = {
+                    total: savedTracks.total,
+                    items: _tracksArray
+                } 
+                dispatch({type: "SET_SAVEDTRACKS", payload: _savedTracksData})
+            })
             // playlist array [items]
             spotifyApi.getMe()
             .then(user => {
@@ -319,27 +333,39 @@ export default function MainApp(){
                     </div>
                     <ul className = "MA_navTop">
                         <li>
-                            <div><FaHome/></div>
-                            <Link to="home">Home</Link>
+                            <Link to="home" className="MA_navLink">
+                                <span className = "span_navIcon"><FaHome/></span>    
+                                <span className = "span_navText">Home</span>
+                            </Link>
                         </li>
                         <li>
-                            <div><FaSearch/></div>
-                            <Link to="search">Search</Link>
+                            {/* <div><FaSearch/></div>
+                            <Link to="search">Search</Link> */}
+                            <Link to="search" className="MA_navLink">
+                                <span className = "span_navIcon"><FaSearch/></span>    
+                                <span className = "span_navText">Search</span>
+                            </Link>
                         </li>
                         <li>
-                            <div><BiLibrary/></div>
-                            <Link to="yourlibrary">Your Library</Link>
+                            <Link to="yourlibrary" className="MA_navLink">
+                                <span className = "span_navIcon"><BiLibrary/></span>    
+                                <span className = "span_navText">Your Library</span>
+                            </Link>
                         </li>
                         <li className = "MA_navTopPlaylist_gap">
 
                         </li>
                         <li>
-                            <div className = "MA_navPLusIcon"><AiOutlinePlus size={15}/></div>
-                            <Link to="yourlibrary" className="MA_navLikeda">Create Playlist</Link>
+                            <button className = "PlaylistBTNB">
+                                <span className = "MA_navPLusIcon"><AiOutlinePlus size={15}/></span>
+                                <span className="MA_navLikeda">Create Playlist</span>
+                            </button>
                         </li>
                         <li>
-                            <div className = "MA_navHeartIcon"><FaHeart/></div>
-                            <Link to="yourlibrary" className="MA_navLikeda">Liked Songs</Link>
+                            <button className = "PlaylistBTNB" onClick = {e => navigate("/app/playlist/likedsongs")}>
+                                <span className = "MA_navHeartIcon"><FaHeart/></span>
+                                <span to="yourlibrary" className="MA_navLikeda">Liked Songs</span>
+                            </button>
                         </li>
                     </ul>
                     {/* bottom nav --playlists*/}
@@ -372,27 +398,39 @@ export default function MainApp(){
                     </div>
                     <ul className = "MA_navTop">
                         <li>
-                            <div><FaHome/></div>
-                            <Link to="home">Home</Link>
+                            <Link to="home" className="MA_navLink">
+                                <span className = "span_navIcon"><FaHome/></span>    
+                                <span className = "span_navText">Home</span>
+                            </Link>
                         </li>
                         <li>
-                            <div><FaSearch/></div>
-                            <Link to="search">Search</Link>
+                            {/* <div><FaSearch/></div>
+                            <Link to="search">Search</Link> */}
+                            <Link to="search" className="MA_navLink">
+                                <span className = "span_navIcon"><FaSearch/></span>    
+                                <span className = "span_navText">Search</span>
+                            </Link>
                         </li>
                         <li>
-                            <div><BiLibrary/></div>
-                            <Link to="yourlibrary">Your Library</Link>
+                            <Link to="yourlibrary" className="MA_navLink">
+                                <span className = "span_navIcon"><BiLibrary/></span>    
+                                <span className = "span_navText">Your Library</span>
+                            </Link>
                         </li>
                         <li className = "MA_navTopPlaylist_gap">
 
                         </li>
                         <li>
-                            <div className = "MA_navPLusIcon"><AiOutlinePlus size={15}/></div>
-                            <Link to="yourlibrary" className="MA_navLikeda">Create Playlist</Link>
+                            <button className = "PlaylistBTNB">
+                                <span className = "MA_navPLusIcon"><AiOutlinePlus size={15}/></span>
+                                <span className="MA_navLikeda">Create Playlist</span>
+                            </button>
                         </li>
                         <li>
-                            <div className = "MA_navHeartIcon"><FaHeart/></div>
-                            <Link to="yourlibrary" className="MA_navLikeda">Liked Songs</Link>
+                            <button className = "PlaylistBTNB" onClick = {e => navigate("/app/playlist/likedsongs")}>
+                                <span className = "MA_navHeartIcon"><FaHeart/></span>
+                                <span to="yourlibrary" className="MA_navLikeda">Liked Songs</span>
+                            </button>
                         </li>
                     </ul>
                     {/* bottom nav --playlists*/}
@@ -413,6 +451,7 @@ export default function MainApp(){
                     user,
                     home,
                     playlists,
+                    likedSongs,
                     musicPlayer,
                     dispatch
                     }}> 

@@ -1,27 +1,22 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect} from "react";
+import {useNavigate} from "react-router-dom"
 import "../styles/library.scss";
 import { AppContext } from "../context";
 import {useWindowWidthResize} from "../hooks"
 // icons
-import {FaPlay} from "react-icons/fa";
+import {FaPlay,FaHeart} from "react-icons/fa";
 import {BsMusicNoteBeamed} from 'react-icons/bs';
 
 function ListItem(props){
-const {item} = props;
-const [showPlayBtn, setShowPlayBtn] = useState(null);
-const {windowWidth} = useWindowWidthResize();
+const {item, showPlayBtn, navigate} = props;
 useEffect(() => {
-    if(windowWidth >= 768){
-        setShowPlayBtn(true)
-    }
-    else {
-        setShowPlayBtn(false)
-    }
-}, [item, windowWidth])
+}, [item, showPlayBtn])
     return(
         <li 
         className = "YL_catCardli"
-        onClick={(e) => {}}
+        onClick={(e) => {
+            navigate(`/app/playlist/${item.id}`)
+        }}
         >
         <div className = "YL_CardliImageCon"
             
@@ -54,20 +49,30 @@ useEffect(() => {
 export default function YourLibrary(){
     const {
         playlists,
+        likedSongs,
         dispatch
-    } = useContext(AppContext)
+    } = useContext(AppContext);
+    const navigate = useNavigate()
+    const {windowWidth} = useWindowWidthResize();
     const [playlistsData, setPlaylistsData]=useState(null);
+    const [songsNo, setSongsNo] = useState(null)
+    const [showPlayBtn, setShowPlayBtn] = useState(null)
 
 
     useEffect(() => {
         if(playlists){
-            setPlaylistsData(playlists)
+            setPlaylistsData(playlists);
+            if(likedSongs){
+                const _noOfSongs = likedSongs.total
+                setSongsNo(_noOfSongs)
+            }
         }
-    }, []);
-    if(playlists){
-        console.log("Playlists", playlists)
-        console.log("playlistsData", playlistsData)
-    }
+        if(windowWidth >= 768){
+            setShowPlayBtn(true)
+        }else {
+            setShowPlayBtn(false)
+        }
+    }, [windowWidth, playlists,likedSongs])
     return(
         <div className = "YL_libraryMainContainer">
         <h2 className = "YL_libTitle">
@@ -78,9 +83,29 @@ export default function YourLibrary(){
             {/* LIKED SONGS LIST */}
             <li 
                 key ={"likedSongs"}
+                onClick = {(e) => {
+                    navigate(`/app/playlist/likedsongs`)
+                }}
                 className = "YL_liLikedSongs"
                 >
-                    
+                
+                <div className = "YL_CardliImageCon">
+                    <FaHeart/>
+                </div>
+                {/* Playlist Name */}
+                <h3 className = "YL_CatCardliTitle">Liked Songs</h3>
+                {/* Playlist BY */}
+                <p className = "YL_CatCardliDescription">{songsNo ? songsNo : "0"} liked songs</p>
+                {/* play Button for small device */}
+                {showPlayBtn ?
+                            <button 
+                                className = "YL_CardliImagePlayBTN"
+                                onClick = {(e) => {}}
+                                >
+                                <FaPlay/>
+                            </button>
+                        : null
+                    }
 
             </li>
 
@@ -90,6 +115,8 @@ export default function YourLibrary(){
                     return <ListItem 
                             key = {index}
                             item = {item}
+                            showPlayBtn = {showPlayBtn}
+                            navigate = {navigate}
                     />
                 })
             }

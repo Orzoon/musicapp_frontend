@@ -62,7 +62,10 @@ function milliSecondToTime(milli_seconds, value = false){
         }
         return  `${s} s`
     }
-    if(h ===0) return [m,s]
+    h = h < 10 ? h = `0${h}` : h;
+    m = m < 10 ? m = `0${m}` : m;
+    s = s < 10 ? s = `0${s}` : s;
+    if(h ===0 || h === "00") return [m,s]
     return [h,m,s]
     
 }
