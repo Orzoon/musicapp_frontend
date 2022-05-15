@@ -14,13 +14,14 @@ export default function Home(){
     const navigate = useNavigate();
     const homeIDS = ["mood","freshnewmusic","workout","chill", "pop", "hip-hop", "wellness", "party", "rock"]
     const {windowWidth} = useWindowWidthResize()
-    const {home: homeData} = useContext(AppContext)
+    const {setNavOpen,home: homeData} = useContext(AppContext)
     const [homeDataCopy, setHomeDataCopy] = useState(null);
     const [indCat, setIndCat] = useState(null);
     const [indData, setIndData] = useState(null);
     const [showPlayHomeBtn, setShowPlayHomeBtn] = useState(true);
 
     useEffect(() => {
+        setNavOpen(false)
         if(homeData){
             //checking the width
             const widthsArr = [320,480,580,768,992,1200,1400];//number

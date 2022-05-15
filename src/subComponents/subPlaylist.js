@@ -1,7 +1,8 @@
-import React,{useEffect, useState, useRef, forwardRef} from "react";
+import React,{useEffect, useState, useRef, useContext} from "react";
 import { useParams } from "react-router-dom";
 import {milliSecondToTime} from "../helper";
 import { spotifyApi } from "../helper";
+import { AppContext } from "../context";
 // icons
 import {
     MdSearch, 
@@ -17,6 +18,7 @@ import {
 export function PlaylistSearch({
     external,
     likedSongsBool,
+    searchTracksLength,
     searchFix,
     findMore,
     setFindMore,
@@ -86,14 +88,20 @@ export function PlaylistSearch({
     if(external || likedSongsBool) return null
     return(
         <div 
-            className = {(findMore && searchFix) ? 
+            className = {((findMore && searchFix)) ? 
             "PL_playlistSearch PL_playlistSearchFIX" 
-            : "PL_playlistSearch"}
-            >
+            : "PL_playlistSearch"}>
             {/* SEARCH FROM OR FIND MORE BTN */}
             {!findMore && _findMore}
             {/* SEARCH TITLE */}
             {findMore && _PlaylistSearch}
+            
+            {findMore && inputValue.length > 1 && searchTracksLength === 0 &&
+                <div className = "PL_NoSearchResult">
+                    <h2>No Results found</h2>
+                    <p>Please make sure your words are spelled correctly or use less or different keywords.</p>
+                </div>            
+            }
         </div>
     )
 }
@@ -106,16 +114,21 @@ export function PlaylistSongsList(props){
         external,
         track, 
         searchSectionBool,
-        likedSongsBool,
         addTrackToPlaylistHandler,
+        currentPlayingURIID,
+        clickActiveListID,
         index,
         removeTrackFromPlaylistHandler,
         removeLikedSongsHandler,
         addLikedSongsHandler,
-        musicDispatchHandler
+        musicDispatchHandler,
+        setClickActiveListID,
+        likedSongs,
+        likedSongsBool,
+        playlistID
     } = props;
     const [dropDownBool, setDropDownBool] = useState(false);
-    const [liked, setLiked] = useState(null)
+    const [liked, setLiked] = useState(false);
     const {
         id,
         name,
@@ -125,28 +138,48 @@ export function PlaylistSongsList(props){
         type,
     } = track;
     const time = milliSecondToTime(duration_ms); 
+
+    /* color Change  */
+    const listRef = useRef(id)
     /* Checking for the liked song */
     useEffect(() => {
-        if(!likedSongsBool){
-            spotifyApi.containsMySavedTracks([track.id])
-            .then(liked => {
-                setLiked(liked[0])
-            })
-            .catch(error => {
+        
+        // // checked against liked songs
+        // if(!likedSongsBool){
+        //     spotifyApi.containsMySavedTracks([track.id])
+        //     .then(liked => {
+        //         setLiked(liked[0])
+        //     })
+        //     .catch(error => {
+        //         setLiked(false)
+        //     })
+        // }else if(likedSongsBool){
+        //     setLiked(true)
+        // }
+        // else {
+        //     setLiked(false)
+        // }
+        if(!likedSongsBool && !searchSectionBool){
+            const _itemsIdArray = likedSongs.itemsIdArray;
+            const _includes = _itemsIdArray.includes(id)
+            if(_includes){
+                setLiked(true)
+            }else{
                 setLiked(false)
-            })
-        }else{
+            }
+        }
+        if(likedSongsBool){
             setLiked(true)
         }
-    }, [])
+    })
 
     function saveRemoveSongsHandler(id, action){
         if(track.type !=="track") return null
         if(action ==="SAVE"){
            spotifyApi.addToMySavedTracks([id])
-           .then(response => {
-             setLiked(true)  
-             addLikedSongsHandler(id)
+           .then(response => { 
+                setLiked(true)
+                addLikedSongsHandler(id)
            })
            .catch(error => {
                return null;
@@ -156,23 +189,32 @@ export function PlaylistSongsList(props){
         if(action ==="REMOVE"){
             spotifyApi.removeFromMySavedTracks([id])
             .then(response => {
-                setLiked(false) 
-                if(likedSongsBool){
-                    removeLikedSongsHandler(id)
-                }
+                        setLiked(false)
+                        removeLikedSongsHandler(id)
+                    // if(likedSongsBool){
+                    //     removeLikedSongsHandler(id)
+                    // }
             })
             .catch(error => {
+                console.log("something went wrong")
                 return null
             })
         }
     }
- 
 
+    
     if(!track){
         return null
     }
     return(
-        <li className = "PL_playListLROW">
+        <li 
+            ref = {listRef}
+            className = "PL_playListLROW" 
+            style = {{
+                background: clickActiveListID && clickActiveListID === id ? "#5A5A5A" : "" 
+            }}
+            onClick = {e => {setClickActiveListID(id)}}
+            >
             {/*COLUMN UL**/}
             <ul className="PL_playListULColumn">
                 {/* Hiding number list in smaller devices */} 
@@ -180,14 +222,28 @@ export function PlaylistSongsList(props){
                 <li className = "PL_ULC_1">1</li>
                 {/* PlayBTN */}
                 <li className = "PL_ULC_2">
-                    <button 
-                        className="PL_ULC_7PlayBtn"
-                        onClick={(e) => {
-                            /* iimage name and artists later on */
-                                musicDispatchHandler(track.uri,"play")                         
-                            }}>
-                        <FaPlay/>
-                    </button>
+                    
+                    {currentPlayingURIID && currentPlayingURIID === track.uri ? 
+                        <button
+                            className="PL_ULC_7PlayBtnPlay"
+                            disabled = {true}
+                            >   
+                            <span className = "playContainer"> 
+                                <span className = "play1Anim"></span>
+                                <span className = "play2Anim"></span>
+                                <span className = "play3Anim"></span>
+                                <span className = "play4Anim"></span>
+                            </span>
+                        </button> :
+                        <button 
+                            className="PL_ULC_7PlayBtn"
+                            onClick={(e) => {
+                                /* iimage name and artists later on */
+                                    musicDispatchHandler(track.uri,"play")                         
+                                }}>
+                            <FaPlay/>
+                         </button>              
+                    }
                 </li>
                 {/*Music NOTE ICON OR PODCAST ICON */}
                 <li className = "PL_ULC_3">
@@ -201,7 +257,10 @@ export function PlaylistSongsList(props){
                 </li>
                 {/* Song Name */}
                 <li className = "PL_ULC_5">
-                    <h3>{name}</h3>
+                    {/* changing Name color ----> onPlayerState */}
+                    <h3
+                        style = {{color: currentPlayingURIID === track.uri ? "#1ed760" :"#fff"}}
+                        >{name}</h3>
                     {/* fix with ul */}
                     <div>
                         {/* ALBUM ARTISTS LOOP */}
@@ -213,6 +272,10 @@ export function PlaylistSongsList(props){
                                         <a 
                                             key = {artist.id}
                                             href = {artist.href}
+                                            style = {{
+                                                color: clickActiveListID === id ? "#fff" : " "
+                                            }}
+                                            onClick = {e => e.preventDefault()}
                                         >
                                             {","}{" "}<span>{artist.name}</span>
                                         </a>
@@ -220,8 +283,12 @@ export function PlaylistSongsList(props){
                                 }
                                 return (
                                     <a 
+                                    style = {{
+                                        color: clickActiveListID && clickActiveListID === id ? "#fff" : " "
+                                    }}
                                     key = {artist.id}
                                     href = {artist.href}
+                                    onClick = {e => e.preventDefault()}
                                     >
                                      <span>{artist.name}</span>
                                     </a>
@@ -232,7 +299,13 @@ export function PlaylistSongsList(props){
 
                 {/* ALBUM OR PODCAST */}
                 <li className = "PL_ULC_6">
-                    <h3>{album.name}</h3>
+                    <h3
+                        style = {{
+                        color: clickActiveListID && clickActiveListID === id ? "#fff" : " "
+                    }}                                     
+                    >
+                        {album.name}
+                    </h3>
                 </li>
                 {/* NOTE -- NO RELEASE DATE -- */}
                 
@@ -320,7 +393,10 @@ export function PlaylistSongsList(props){
 
 /*****LISTDROPDOWN*** */
 function ListDropdown(props){
-    
+    const {
+        notification,
+        dispatch
+    }= useContext(AppContext)
     const {
         external,
         id, 
@@ -394,7 +470,15 @@ function ListDropdown(props){
                         navigator.clipboard.writeText(link)
                         .then((text) => {
                           //setting  the notification later on
-                        })
+                          // closing the menu
+                          setDropDownBool(false)
+
+                            // notification
+                            const __setNotification = [...notification, {
+                                id: id+Math.random()+"copied",
+                                message: "Link copied"
+                            }]
+                            dispatch({type: "SET_NOTIFICATION", payload:__setNotification })})
                         .catch(error=> {
                             // failed
                             return null
@@ -409,9 +493,14 @@ function ListDropdown(props){
 
 /*****PlayBtnDropdown*** */
 export function PlayBtnDropdown(props){
+    const {
+        notification,
+        dispatch
+    }= useContext(AppContext)
     const playbtnRef = useRef();
     const {
         setPlaybtnDropBool,
+        setAboutRecomBool,
         external,
         setEditPlaylistBool,
         playlistLink,
@@ -450,6 +539,7 @@ export function PlayBtnDropdown(props){
                     onClick={(e) => {
                     // after deleting the playlist
                         setPlaybtnDropBool(false)
+                        setAboutRecomBool(true)
                         //show recommendations instead
                     }}>
                         About recommendations
@@ -493,7 +583,13 @@ export function PlayBtnDropdown(props){
                             navigator.clipboard.writeText(playlistLink)
                             .then((text) => {
                             //setting  the notification later on
-                            })
+                            setPlaybtnDropBool(false)
+                             // notification
+                             const __setNotification = [...notification, {
+                                id: playlistLink+Math.random()+"copied",
+                                message: "Link copied"
+                            }]
+                            dispatch({type: "SET_NOTIFICATION", payload:__setNotification })})
                             .catch(error=> {
                                 // failed
                                 return null
@@ -577,6 +673,38 @@ export function EditPlaylist(props){
                     className = "Form_save">
                     Save
                 </button>
+            </div>
+        </div>
+    )
+}
+
+
+/*****Anbout Playlist** */
+export function AboutPlaylist(props){
+    const {
+        setAboutRecomBool
+    } = props;
+    return (
+        <div 
+            className = "RecommPlaylistMainContainer">
+            
+            <div className = "RecommContainer">
+                <h2>About Recommendations</h2>
+                <button 
+                    className = "Form_close"
+                    onClick = {e => {setAboutRecomBool(false)}}
+                    >
+                    <MdClose/>
+                </button>
+
+                <div className = "RecommPDIV">
+                    <p>Our recommendations help you find audio you’ll enjoy, whether that’s an old favorite or a new song or show you never knew you’d be into.</p>
+
+                    <p>Our editors around the globe have extensive knowledge about music and culture, and make sure our playlists are created with the best listener experience in mind.</p>
+
+                    <p>Our personalized recommendations are tailored to your unique taste, taking into account a variety of factors, such as what you’re listening to and when, the listening habits of people who have similar taste in music and podcasts, and the expertise of our music and podcast specialists.</p>
+                    <p> In some cases, commercial considerations may influence our recommendations, but listener satisfaction is our priority and we only ever recommend content we think you’ll want to hear. Our recommendations rely on signals from you, so keep on listening to the songs and podcasts you love!.</p>
+                </div>
             </div>
         </div>
     )

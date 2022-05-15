@@ -1,10 +1,13 @@
 import React, {
     useState, 
     useContext,
-    useEffect} from "react";
+    useEffect,
+    useRef} from "react";
 
 import {useParams, useNavigate} from "react-router-dom"; 
 
+/* loader */
+import {PlaylistLoader} from "../subComponents/loader"
 /* Importing usePlaylistFindMore Hook */
 import {usePlaylistFindMore} from "../hooks"
 import { spotifyApi, milliSecondToTime } from "../helper";
@@ -12,7 +15,8 @@ import {
     PlaylistSearch, 
     PlaylistSongsList,
     PlayBtnDropdown,
-    EditPlaylist
+    EditPlaylist,
+    AboutPlaylist
 } from "../subComponents/subPlaylist";
 
 import {FaPlay,
@@ -34,9 +38,12 @@ const initialSearchValue = {
 export default function Playlist(){
     // getting playlists data ---> ALL Playlists IMP Data
     const {
+        setNavOpen,
         user,
         likedSongs,
         playlists,
+        musicPlayer,
+        notification,
         dispatch} = useContext(AppContext);
     const {playlistID} = useParams();
     // ExternalPlaylist 
@@ -51,8 +58,6 @@ export default function Playlist(){
     const [totalLength, setTotalLength] = useState(0);
     // for request
     const navigate = useNavigate()
-    const [playListloading, setPlayListLoading ] = useState(true);
-
     /* SEARCH SECTION */
     const {
         loading, 
@@ -63,13 +68,24 @@ export default function Playlist(){
     } = usePlaylistFindMore(initialSearchValue);
     const [findMore, setFindMore] = useState(false);
     const [searchFix, setSearchFix] = useState(false);
-    const [editPlaylistBool, setEditPlaylistBool] = useState(null)
+    const [editPlaylistBool, setEditPlaylistBool] = useState(null);
+    const [aboutRecomBool, setAboutRecomBool] = useState(false)
     /* USEFFECT --> PLAYLIST */
+    const [currentPlayingURIID, setCurrentPlayingURIID] = useState(null);
+    const [clickActiveListID, setClickActiveListID] = useState(null);
+    const [playListloading, setPlayListLoading ] = useState(false);
+    const playlistDIVRef = useRef();
+    const [playlistLoading, setPlaylistLoading] = useState(true)
     useEffect(() => {
+        // closing the navopen
+        setNavOpen(false)
         /* iF no playlistID */
 
+
+        //---checking for musicPlayerFirst
         // --checking for likedsongs
         if(playlistID === "likedsongs" && user && likedSongs){
+            setPlaylistLoading(true)
             const _likedsongsTitleData = {
                 title: "Liked Songs",
                 imageArray: user.images, // --array--uri
@@ -93,11 +109,13 @@ export default function Playlist(){
             setExternal(null);
             setLikedSongsBool(true)
             setAlbums(likedSongs.items)
+            setPlaylistLoading(false)
             return 
         }
 
         //--check for external second
         if(playlistID.split(":").length > 2){
+            setPlaylistLoading(true)
             const externalParam = playlistID.split(":"); //array
 
             /* COMMON_VARIABLES */
@@ -128,7 +146,7 @@ export default function Playlist(){
                             return [...accumulator,currentItem.track]
                         }, []);
                         const _onlyTracks = _tracks.reduce((accumulater, item) => {
-                            if(item.track){
+                            if(item && item.track){
                                return [...accumulater, item]
                             }
 
@@ -142,7 +160,11 @@ export default function Playlist(){
                         // setting _albums and totalLength
                         setAlbums(_onlyTracks)
                         setTotalLength(totTrackLength_ms)
+                        setPlaylistLoading(false)
                     })
+                })
+                .catch(error => {
+                    console.log("error")
                 })
             }
 
@@ -182,10 +204,6 @@ export default function Playlist(){
                             return accumulator + currentItem.duration_ms
                         },0)
 
-                        console.log("tracks",_onlyTracks)
-                        console.log("onlyTracks", _onlyTracks)
-                        // setting _albums and totalLength
-                        console.log("playlistData",_playListData)
                         setPlayListData(_playListData)
                         setExternal(true)
                         setAlbums(_onlyTracks)
@@ -196,24 +214,31 @@ export default function Playlist(){
             }
 
             return
+        }
 
+    
+        // --> Checking for the dumb playlist Name
+        if(playlistID && playlists.length === 0){
+            return
         }
 
         /* PUBLIC PLAYLIST */
         /* FILTERING PLAYLIST DATA FROM PLAYLISTID */
         if(playlists.length > 0){
+            setPlaylistLoading(true)
             const playlistGeneralData = playlists.filter((item, index) => item.id.toString() === playlistID.toString());
-            if(!playlistGeneralData){
-                // error page
+            if(playlistGeneralData.length === 0){
+                console.log("here playlist")
+               return
             }
-
-
             // saving as an object
             setExternal(false)
             setExternal(null);
             setLikedSongsBool(null)
             setPlayListData(...playlistGeneralData)
             setPlaylistLink(playlistGeneralData[0].external_urls.spotify)
+            setPlaylistLoading(false)
+            //setPlaylistLoading(false)
         }
 
         // getting albums from ID;
@@ -248,6 +273,7 @@ export default function Playlist(){
                     },0)
                     setTotalLength(totTrackLength_ms)
                     setAlbums(_onlyTracks)
+                    setPlaylistLoading(false)
                 }
                 // if no albums then setting FINDMORE TO TRUE
                 if(data.items.length === 0){
@@ -264,9 +290,36 @@ export default function Playlist(){
                 // clearing everything for the new platlist
 
             })
+            .catch(error => {
+                console.log("no tracks")
+            })
         }
+
+
     }, [playlists,user,playlistID, likedSongs])
 
+    useEffect(() => {
+        if(musicPlayer){
+            if("playlistID" in musicPlayer){
+                if(musicPlayer.playlistID === playlistID){
+                    // setting current track
+                    setCurrentPlayingURIID(musicPlayer.currentTrackUri)
+                }else {
+                    setCurrentPlayingURIID(null)
+                }
+            }
+        }
+    }, [musicPlayer, playlistID])
+
+    useEffect(() => {
+        window.addEventListener("click", outsideListClickFix)
+
+        return(() => window.removeEventListener("click", outsideListClickFix))
+    },[])
+
+    useEffect(() => {
+        
+    })
     
     /* ADD Tracks to PlayLIST */
     function addTrackToPlaylistHandler(trackUriID){
@@ -279,7 +332,6 @@ export default function Playlist(){
             }
         }
       
-
         spotifyApi.addTracksToPlaylist(playlistID,[trackUriID])
         .then(data => {
 
@@ -289,6 +341,14 @@ export default function Playlist(){
                 const newAddedTrack = [...albums, ...newTrack]
                 setTotalLength(totalLength + newTrack[0].duration_ms)
                 setAlbums(newAddedTrack);
+
+                // notification
+                const __setNotification = [...notification, {
+                    id: newTrack[0].id+"added",
+                    message: "Track added"
+                }]
+                dispatch({type: "SET_NOTIFICATION", payload:__setNotification })
+                
             }
         })
     }
@@ -304,15 +364,37 @@ export default function Playlist(){
                 const timeToreduce = albums.filter(track => track.uri === trackUriID)[0].duration_ms
                 setTotalLength(totalLength - timeToreduce)
                 setAlbums(albumsFiltered);
+                // notification
+                const __setNotification = [...notification, {
+                    id: trackUriID+"deleted",
+                    message: "Track removed"
+                }]
+                dispatch({type: "SET_NOTIFICATION", payload:__setNotification })
             }
         })
     }
 
     /* SETTING MUSIC PLAYER */
     function musicDispatchHandler(trackUri,setPlay){
+
+        if(findMore && searchTracks && searchTracks.length > 0){
+            //--> check if the click is coming from the search section
+            const _UriArray = albums.reduce((accumulater, item) => {
+                return [...accumulater, item.uri]
+            }, [])
+            
+            const _albumIncludesUri = _UriArray.includes(trackUri)
+
+            if(!_albumIncludesUri){
+                musicDispatchHandlerSearch(trackUri, setPlay)
+                return null
+            } 
+        }
+
         const uriArray = albums.reduce((accum, currentItem) => {
             return [...accum, currentItem.uri]
         }, [])
+
         const trackDetails = albums.reduce((accum, currentItem) => {
             return [...accum,
                     {
@@ -338,12 +420,54 @@ export default function Playlist(){
         dispatch({type: "SET_MUSICPLAYER", payload: musicData})
     }
 
+    /* MUSIC Player Search Seaction */
+    function musicDispatchHandlerSearch(trackUri,setPlay){
+        //console.log("searchtracks", searchTracks)
+      
+        const oneTrack = searchTracks.filter(item => item.uri === trackUri)
+        //getting only one track
+        const uriArray = oneTrack.reduce((accum, currentItem) => {
+            return [...accum, currentItem.uri]
+        }, [])
+        
+
+        console.log("uriArray",uriArray)
+        const trackDetails = oneTrack.reduce((accum, currentItem) => {
+            return [...accum,
+                    {
+                        name: currentItem.name,
+                        artists: currentItem.artists,
+                        image: currentItem.album.images[0].url,
+                        uri: currentItem.uri
+                    }]
+        }, [])
+        // console.log("trackdetails", trackDetails)
+        ///console.log("trackUri", trackUri)
+        const trackPosition = uriArray.indexOf(trackUri);
+        /* contextURI playlistURI or albumURI */
+        const musicData = {
+            playlistID: playlistID,
+            conntext_uri : playListData.uri,
+            trackDetails: trackDetails,
+            uris: uriArray,//array
+            currentTrackUri: trackUri,
+            currentPosition: trackPosition,
+            setPlay: setPlay,
+            playlistChanged: false,
+
+        }
+        dispatch({type: "SET_MUSICPLAYER", payload: musicData})
+    }
+
+
     function removeLikedSongsHandler(id){
         const _newItems = likedSongs.items.filter(item => item.id.toString() !== id.toString()) 
+        const _newItemsIdArray = likedSongs.itemsIdArray.filter(itemId => itemId !== id)
         const likedCount = likedSongs.total - 1
         const _newLikedSongs = {
             items: _newItems,
-            total: likedCount
+            total: likedCount,
+            itemsIdArray: _newItemsIdArray
         }
         dispatch({type: "SET_SAVEDTRACKS", payload: _newLikedSongs})
     }
@@ -351,20 +475,39 @@ export default function Playlist(){
     
     function addLikedSongsHandler(id){
         const _itemsCopy = [...likedSongs.items] 
+        //check if it exists
+        const exists = _itemsCopy.filter(item => item.id === id)
+
+        if(exists.length > 0){
+            console.log("already exists")
+            return
+        }
+
         const _item = albums.filter(item => item.id.toString() === id.toString())[0]
         const _newItems = [..._itemsCopy,_item]
+
+        const _itemsIdArrayCopy = [...likedSongs.itemsIdArray, _item.id]
+        
         const likedCount = likedSongs.total + 1
         const _newLikedSongs = {
             items: _newItems,
-            total: likedCount
+            total: likedCount,
+            itemsIdArray: _itemsIdArrayCopy
         }
         dispatch({type: "SET_SAVEDTRACKS", payload: _newLikedSongs})
     }
 
     function deletePlaylistHandler(){
-       const _filteredPlaylist = playlists.filter(playlist => playlist.id.toString() !== playlistID)
-       dispatch({type: "SET_PLAYLIST", payload: _filteredPlaylist})
-       navigate("/app/yourlibrary")
+        spotifyApi.unfollowPlaylist(playlistID)
+        .then(success => {
+            const _filteredPlaylist = playlists.filter(playlist => playlist.id.toString() !== playlistID)
+            dispatch({type: "SET_PLAYLIST", payload: _filteredPlaylist})            
+            navigate("/app/yourlibrary")
+            // notification
+        })
+        .catch(error => {
+            // same playlist with couldnot be deleted message
+        })
     }
 
     function playlistNameChangeHandler(nameValue){
@@ -377,11 +520,21 @@ export default function Playlist(){
        // setting new playlists
        dispatch({type: "SET_PLAYLIST", payload: newArray})
     }
+
+    function outsideListClickFix(e){
+        if(playlistDIVRef && !playlistDIVRef.current.contains(e.target)){
+            setClickActiveListID(null)
+        }
+    }
     
+
+
+    if(playlistLoading){
+        return <PlaylistLoader/>
+        
+    }
     /* -->  TODO --> /* NOTE Replace with loading and loading CSS */
     if(!playListData || !albums) return
-    console.log("playlistData", playListData)
-    console.log("playlists", playlists)
     return(
         <div className = "PL_mainContainer">
 
@@ -477,8 +630,40 @@ export default function Playlist(){
                           <button 
                             disabled = {(albums && albums.length > 0) ? false : true}
                             className="PL_mainPlayButton" 
-                            onClick={(e) => {musicDispatchHandler(albums[0].uri,"play")}}>
-                            <FaPlay/>
+                            onClick={(e) => 
+                            {
+                                // If playing just pause it
+                                if(musicPlayer && musicPlayer.playlistID === playlistID && musicPlayer.setPlay ==="play"){
+                                    const _payload = {
+                                        ...musicPlayer,
+                                        setPlay:"pause"
+                                    }
+                                    dispatch({type:"SET_MUSICPLAYER", payload: _payload})
+                                    return 
+                                }
+
+                                if(musicPlayer && musicPlayer.playlistID === playlistID && musicPlayer.setPlay ==="pause"){
+                                    const _payload = {
+                                        ...musicPlayer,
+                                        setPlay:"play"
+                                    }
+                                    dispatch({type:"SET_MUSICPLAYER", payload: _payload})
+
+                                    return 
+                                }
+                               
+                                // if none is playing
+                                musicDispatchHandler(albums[0].uri,"play")
+                                
+                            }}>
+                            
+                            {/* ICON---CONDITION */}
+                            {musicPlayer && musicPlayer.playlistID === playlistID && musicPlayer.setPlay === "play" ?
+                                <FaPause/>:
+                                musicPlayer && musicPlayer.playlistID === playlistID && musicPlayer.setPlay === "pause"? 
+                                <FaPlay/>:
+                                <FaPlay/>
+                            }
                         </button>
                  
                  }  
@@ -498,6 +683,7 @@ export default function Playlist(){
                     {PlaybtnDropBool ?  
                         <PlayBtnDropdown
                             setPlaybtnDropBool = {setPlaybtnDropBool}
+                            setAboutRecomBool = {setAboutRecomBool}
                             external = {external}
                             setEditPlaylistBool = {setEditPlaylistBool}
                             playlistLink = {playlistLink}
@@ -528,7 +714,7 @@ export default function Playlist(){
                         </li>
                         <li>
                             <button onClick={ e => {
-                                navigate("/app/yourlibrary")
+                                navigate("/app/search")
                             }}>
                                 Find songs
                             </button>
@@ -537,7 +723,9 @@ export default function Playlist(){
                 </div>
             }
 
-            <div className = "PL_playlistsDIV">
+            <div 
+                ref = {playlistDIVRef}
+                className = "PL_playlistsDIV">
                 {/* List Heading */}
                 {albums && albums.length> 0 && 
                     <ul className="PL_playListsULROWHeading">
@@ -570,16 +758,30 @@ export default function Playlist(){
                                         index = {index}
                                         external = {external}
                                         likedSongsBool = {likedSongsBool}
+                                        likedSongs = {likedSongs}
+                                        currentPlayingURIID = {currentPlayingURIID}
+                                        clickActiveListID = {clickActiveListID}
                                         /* methods */
                                         removeTrackFromPlaylistHandler = {removeTrackFromPlaylistHandler}
                                         removeLikedSongsHandler = {removeLikedSongsHandler}
                                         addLikedSongsHandler = {addLikedSongsHandler}
                                         musicDispatchHandler = {musicDispatchHandler}
+                                        setClickActiveListID = {setClickActiveListID}
+                                        playlistID = {playlistID}
                                     />
                                     </ul>)
                     })
                 }
-                    
+                
+                {/* BORDER FIX */}
+                {albums && albums.length > 0 && findMore &&
+                <div
+                    style = {{ borderBottom: "0.2px solid rgba(255,255,255,0.2)",
+                                paddingTop: "15px"
+                                }}
+                >
+                </div>
+                }
                 {/* search option */}
                 <PlaylistSearch
                     /* css */
@@ -588,6 +790,7 @@ export default function Playlist(){
                     external = {external}
                     likedSongsBool = {likedSongsBool}
                     playlistID = {playlistID}
+                    searchTracksLength = {searchTracks ? searchTracks.length : null}
                     findMore = {findMore}  /* Boolean */
                     setFindMore = {setFindMore} /* Boolean */
                     onFindMoreFormChangeHandler = {onFindMoreFormChangeHandler}
@@ -609,13 +812,14 @@ export default function Playlist(){
                                 key = {`${index} + ${index}`}
                                 track = {track}
                                 searchSectionBool = {true}
+                                currentPlayingURIID = {currentPlayingURIID}
                                 /* Methods--Addplaylist*/
+                                musicDispatchHandler = {musicDispatchHandler}
                                 addTrackToPlaylistHandler = {addTrackToPlaylistHandler}
                             />
                             </ul>)                       
                     })
                 }
-
             </div>
 
         {editPlaylistBool &&
@@ -624,6 +828,12 @@ export default function Playlist(){
                 playlistName = {playListData.name}
                 playlistID = {playListData.id}
                 playlistNameChangeHandler = {playlistNameChangeHandler}
+            />
+        }
+
+        {aboutRecomBool &&
+            <AboutPlaylist
+                setAboutRecomBool = {setAboutRecomBool}
             />
         }
         </div>

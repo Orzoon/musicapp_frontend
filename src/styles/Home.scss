@@ -14,6 +14,7 @@ $hoverbgColor: #282828;
     grid-template-columns: 1fr;
     grid-auto-rows: auto;
     grid-row-gap: 40px;
+    align-content: start;
 }
 
 // -hCategory
@@ -45,6 +46,11 @@ $hoverbgColor: #282828;
             text-decoration: none;
             color: $textDescriptionColor;
             text-transform: uppercase;
+            //border: 1px solid red;
+            display: grid;
+            justify-items: center;
+            align-items: center;
+            padding: 5px;
         }
     }
     & ul.H_categoryUL{
@@ -580,7 +586,7 @@ $hoverbgColor: #282828;
             list-style-type: none;
             display: grid;
             //grid-template-columns: repeat(5, 1fr);
-            grid-template-columns: repeat(6, minmax(150px, 190px));
+            grid-template-columns: repeat(6, minmax(150px, 250px));
             grid-template-rows: 1fr;
             background-color: inherit;
             // list gap

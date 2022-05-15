@@ -20,7 +20,7 @@ $SpotifyGreen: #1ed760;
 .PL_mainContainer{
     /* NOTE --Padding in the child Components instead */
     //padding: 30px 10px;
-    padding-bottom: 150px;
+    //padding-bottom: 150px;
     color: #fff;
     background-color: $OutletBackground;
     display: grid;
@@ -255,16 +255,18 @@ div.PL_playlistsDIV{
     grid-auto-rows: auto;
     height: auto;
     color: #fff;
+    padding-bottom: 150px;
 
     & div.PL_playlistSearch{
         padding-bottom: 40px;
         height: auto;
         display: grid;
         grid-template-columns: 1fr 50px;
-        grid-template-rows: auto 40px;
+        grid-template-rows: auto 40px auto;
         grid-row-gap: 12px;
         grid-template-areas: "PL_para PL_btn"
-                             "PL_search PL_btn";
+                             "PL_search PL_btn"
+                             "PL_NoSearch PL_NoSearch";
 
 
 
@@ -358,6 +360,27 @@ div.PL_playlistsDIV{
                 }
             }
         }
+
+        /* Not found */
+        div.PL_NoSearchResult{
+            padding-top: 20px;
+            grid-area: 3/1/4/3;
+            width: 100%;
+            color: $textDescriptionColor;
+            & h2, & p {
+                font-size: 22px;
+                font-weight: 700;
+                color: $textDescriptionColor;
+                width: 100%;
+                display: grid;
+                justify-items: center;
+                align-items: center;
+            }
+            & p {
+                font-size: 13px;
+                font-weight: 600;
+            }
+        }
     }
 }
 
@@ -365,7 +388,6 @@ div.PL_playlistsDIV{
 .PL_playlistSearchFIX{
     padding-top: 40px;
 }
-
 
 /* UL LIST HEADING-ROW */
 div.PL_playlistsDIV ul.PL_playListsULROWHeading{
@@ -419,6 +441,7 @@ div.PL_playlistsDIV ul.PL_playListsULROW{
     /* PL_playListLROW */
     & li.PL_playListLROW{
         width: 100%;
+        border-radius: 5px;
 
         /*----------*/
         /*COLUMN UL*/
@@ -438,7 +461,7 @@ div.PL_playlistsDIV ul.PL_playListsULROW{
         
 
         &:hover{
-            background-color: rgb(59, 58, 58, 0.5);
+            background-color: rgba(59, 58, 58, 0.5);
         }
         & li {
             height: 100%;
@@ -452,7 +475,7 @@ div.PL_playlistsDIV ul.PL_playListsULROW{
 
         /* PlayBTN */
         & li.PL_ULC_2{
-            z-index: 9;
+            z-index: 5;
             //PL_ULC_7PlayBtn
             position: absolute;
             top: 50%;
@@ -470,6 +493,55 @@ div.PL_playlistsDIV ul.PL_playListsULROW{
                 & svg {
                     fill: $textDescriptionColor;
                 }
+            }
+
+            // for ANIMATION ---PLAY
+            & button.PL_ULC_7PlayBtnPlay {
+                background: none;
+                border: none;
+                font-size: 16px;
+                width: 100%;
+                height: 100%;
+                & span.playContainer {
+                    display:block;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    width: 14px;
+                    height: 16px;
+                    transform:translate(-50%, -50%);
+
+                    & span {
+                        height: 15px;
+                        width: 2.5px;
+                        position: absolute;
+                        bottom: 0;
+                        background: $SpotifyGreen;
+                        //left: 0;
+                    }
+                    & span.play1Anim{
+                        left: 0;
+                        height: 0px;
+                        animation: play1Anim 1s ease-in infinite;
+                    }
+                    & span.play2Anim{
+                        left: 3.5px;
+                        height: 5px;
+                        animation: play2Anim 1s ease-in infinite;
+    
+                    }
+                    & span.play3Anim{
+                        right: 0px;
+                        height: 10px;
+                        animation: play3Anim 1s ease-in infinite; 
+                    }
+                    & span.play4Anim{
+                        right: 3.5px;
+                        height: 6px;
+                        animation: play4Anim 1s ease-in infinite;
+                    }
+                }
+                
             }
         }
 
@@ -726,6 +798,103 @@ div.EditPlaylistMainContainer{
 
 }
 
+
+div.RecommPlaylistMainContainer{
+    padding: 10px;
+    position: fixed;
+    min-height: 100%;
+    z-index: 99999999;
+    width: 100%;
+    background: rgba(0,0,0,0.5);
+    //border: 1px solid red;
+    top: 0;
+    left: 0;
+
+    div.RecommContainer{
+        padding-bottom: 25px;
+        width:90%;
+        height: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #282828;
+        border-radius: 8px;
+
+        & h2 {
+            font-size: 24px;
+            font-weight:700;
+            padding: 15px 10px;
+        }
+
+        & button.Form_close{
+            position: absolute;
+            right: 10px;
+            top: 15px;
+            height: 30px;
+            width: 30px;
+            background: none;
+            border: none;
+            outline: none;
+            font-size: 25px;
+            //background: red;
+        }
+
+        div.RecommPDIV{
+            border-top: 0.5px solid rgb(114, 112, 112);
+            padding: 15px 10px;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: scroll;
+            //border: 1px solid red;
+
+            & p {
+                color: #fff;
+                font-size: 15px;
+                font-weight: 400;
+                &:nth-child(2), &:nth-child(3), &:nth-child(4){
+                    margin-top: 15px;
+                }
+                margin-top: 15px;
+
+                &:nth-child(1){
+                    margin-top: 0px;
+                }
+            }
+        }
+    }
+}
+
+
+// Play Animation
+@keyframes play1Anim {
+    0%{height: 0px;}
+    50%{height: 15px;}
+    100%{height: 0px;}
+}
+@keyframes play2Anim {
+    0%{height: 5px;}
+    25%{height: 10px;}
+    50%{height: 15px;}
+    75%{height: 0px;}
+    100%{height: 5px;}
+}
+@keyframes play3Anim {
+    0%{height: 10px;}
+    25%{height: 15px;}
+    50%{height: 10px;}
+    75%{height: 0px;}
+    100%{height: 10px;}
+}
+@keyframes play4Anim {
+    0%{height: 15px;}
+    25%{height: 5px;}
+    50%{height: 10px;}
+    75%{height: 5px;}
+    100%{height: 15px;}
+}
+
+
 // for form only
 @media only screen and (min-width: 320px) {
     div.EditPlaylistMainContainer{
@@ -775,9 +944,137 @@ div.EditPlaylistMainContainer{
     
     
     }
+
+    div.RecommPlaylistMainContainer{
+        padding: 24px;
+        position: fixed;
+        min-height: 100%;
+        z-index: 99999999;
+        width: 100%;
+        background: rgba(0,0,0,0.5);
+        //border: 1px solid red;
+        top: 0;
+        left: 0;
+    
+        div.RecommContainer{
+            padding-bottom: 30px;
+            width:90%;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #282828;
+            border-radius: 8px;
+    
+            & h2 {
+                width: 80%;
+                font-size: 24px;
+                font-weight:700;
+                padding: 15px 20px;
+            }
+    
+            & button.Form_close{
+                position: absolute;
+                right: 10px;
+                top: 15px;
+                height: 30px;
+                width: 30px;
+                background: none;
+                border: none;
+                outline: none;
+                font-size: 25px;
+                //background: red;
+            }
+    
+            div.RecommPDIV{
+                border-top: 0.5px solid rgb(114, 112, 112);
+                padding: 15px 20px;
+                width: 100%;
+                height: 220px;
+                max-height: 300px;
+                overflow-y: scroll;
+                //border: 1px solid red;
+    
+                & p {
+                    color: #fff;
+                    font-size: 15px;
+                    font-weight: 400;
+                    &:nth-child(2), &:nth-child(3){
+                        margin-top: 15px;
+                    }
+                }
+            }
+        }
+    }
 }
 // padding: 30px 24px;
 @media only screen and (min-width: 420px){
+
+    div.RecommPlaylistMainContainer{
+        padding: 24px;
+        position: fixed;
+        min-height: 100%;
+        z-index: 99999999;
+        width: 100%;
+        background: rgba(0,0,0,0.5);
+        //border: 1px solid red;
+        top: 0;
+        left: 0;
+    
+        div.RecommContainer{
+            padding-bottom: 35px;
+            width:90%;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #282828;
+            border-radius: 8px;
+
+    
+            & h2 {
+                width: 100%;
+                font-size: 24px;
+                font-weight:700;
+                padding: 25px 20px;
+                padding-bottom: 15px;
+            }
+    
+            & button.Form_close{
+                position: absolute;
+                right: 10px;
+                top: 15px;
+                height: 30px;
+                width: 30px;
+                background: none;
+                border: none;
+                outline: none;
+                font-size: 25px;
+                //background: red;
+            }
+    
+            div.RecommPDIV{
+                border-top: 0.5px solid rgb(114, 112, 112);
+                padding: 15px 20px;
+                width: 100%;
+                height: 220px;
+                max-height: 300px;
+                overflow-y: scroll;
+                //border: 1px solid red;
+    
+                & p {
+                    color: #fff;
+                    font-size: 15px;
+                    font-weight: 400;
+                    &:nth-child(2), &:nth-child(3){
+                        margin-top: 15px;
+                    }
+                }
+            }
+        }
+    }
     .PL_topMainContainer, .PL_PlaylistsDIV{
         padding: 30px 24px;
     }
@@ -989,6 +1286,70 @@ div.EditPlaylistMainContainer{
 }
 
 @media only screen and (min-width: 576px){
+    div.RecommPlaylistMainContainer{
+        padding: 24px;
+        position: fixed;
+        min-height: 100%;
+        z-index: 99999999;
+        width: 100%;
+        background: rgba(0,0,0,0.5);
+        //border: 1px solid red;
+        top: 0;
+        left: 0;
+    
+        div.RecommContainer{
+            padding-bottom: 35px;
+            width:520px;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #282828;
+            border-radius: 8px;
+            
+    
+            & h2 {
+                width: 100%;
+                font-size: 24px;
+                font-weight:700;
+                padding: 25px 20px;
+                padding-bottom: 15px;
+            }
+    
+            & button.Form_close{
+                position: absolute;
+                right: 10px;
+                top: 15px;
+                height: 30px;
+                width: 30px;
+                background: none;
+                border: none;
+                outline: none;
+                font-size: 25px;
+                //background: red;
+            }
+    
+            div.RecommPDIV{
+                border-top: 0.5px solid rgb(114, 112, 112);
+                padding: 15px 20px;
+                width: 100%;
+                height: 220px;
+                max-height: 300px;
+                overflow-y: scroll;
+                //border: 1px solid red;
+    
+                & p {
+                    color: rgb(239, 235, 235);
+                    font-size: 16px;
+                    font-weight: 400;
+                    &:nth-child(2), &:nth-child(3){
+                        margin-top: 15px;
+                    }
+                }
+            }
+        }
+    }
         /* ul HEADING */
         div.PL_playlistsDIV ul.PL_playListsULROWHeading{
             display: grid;
@@ -1530,7 +1891,7 @@ div.EditPlaylistMainContainer{
                 /* PlayBTN */
                 & li.PL_ULC_2{
 
-                    z-index: 9;
+                    z-index: 5;
                     //PL_ULC_7PlayBtn
                     position: relative;
                     top: 0px;

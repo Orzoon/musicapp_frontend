@@ -1,10 +1,12 @@
 const InitialState = {
     user: null,
     home: [],
-    search: {},
+    search: null,
     likedSongs: null,
     playlists: [],
-    musicPlayer: null
+    musicPlayer: null,
+    notification: [], //array of object id:, :message
+    loadingDataNames: []
 }
 
 export default function appReducer(state, action){
@@ -86,6 +88,21 @@ export default function appReducer(state, action){
                 ...state,
                 musicPlayer: action.payload
             }
+        case "SET_SEARCH":
+            return {
+                ...state,
+                search: action.payload
+            }
+        case 'SET_NOTIFICATION':
+            return {
+                ...state,
+                notification: action.payload
+            }
+        case 'SET_LOADINGDATA':
+            return {
+                ...state,
+                loadingDataNames: [...state.loadingDataNames, action.payload]
+            }           
         default: 
         return state
     }

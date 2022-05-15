@@ -48,6 +48,7 @@ useEffect(() => {
 }
 export default function YourLibrary(){
     const {
+        setNavOpen,
         playlists,
         likedSongs,
         dispatch
@@ -60,6 +61,7 @@ export default function YourLibrary(){
 
 
     useEffect(() => {
+        setNavOpen(false)
         if(playlists){
             setPlaylistsData(playlists);
             if(likedSongs){

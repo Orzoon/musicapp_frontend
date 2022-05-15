@@ -1,7 +1,6 @@
 import React, {useContext, useEffect, useState,} from "react";
 import {useNavigate} from "react-router-dom"
 import { AppContext } from "../context";
-import {spotifyApi} from "../helper";
 
 
 // importing sscss
@@ -44,19 +43,20 @@ return(<li
 
 export default function Search(){
     const {
-        home
+        setNavOpen,
+        search
     } = useContext(AppContext);
-    const searchCategoriesID = [
-        "mood", 
-        "rock", 
-        "pop", 
-        "chill", 
-        "party", 
-        "wellness", 
-        "workout", 
-        "hiphop", 
-        "rnb", 
-        "gaming"]
+    // const searchCategoriesID = [
+    //     "mood", 
+    //     "rock", 
+    //     "pop", 
+    //     "chill", 
+    //     "party", 
+    //     "wellness", 
+    //     "workout", 
+    //     "hiphop", 
+    //     "rnb", 
+    //     "gaming"]
     const colorCode = [
             "#8D67AB", 
             "#E61E32", 
@@ -68,45 +68,18 @@ export default function Search(){
             "#1E3264",
             "#DC148C",
             "#509BF5"] 
-    const [searchList, setSearchList] = useState(null);
-
     useEffect(() => {
-            spotifyApi.getCategories({limit: 50})
-            .then(_data => {
-                    if(!_data){
-                        throw new Error("_no Data")
-                    }
-                    const _array = _data.categories.items;
-                    const _FilteredArray = _array.reduce((accumulator, item, index) => {
-                        const includes =  searchCategoriesID.includes(item.id)
-                        if(includes){
-                                   accumulator = [...accumulator,{
-                                       id: item.id,
-                                       name: item.id,
-                                       href: item.href,
-                                       image: item.icons[0].url
-                                   }]
-                            }
-
-                            return accumulator
-                    }, [])  
-                    
-
-                    // setting the value 
-                    setSearchList(_FilteredArray)
-                })
-            .catch(error => {
-            // later on
-        })
+        setNavOpen(false)
     }, [])
+    if(!search) return null
     return (
         <div className = "S_searchMainContainer">
             <h2 className = "S_catTitle">
                 Browse All
             </h2>
             <ul className = "S_UL"> 
-                { searchList && searchList.length > 0 &&
-                    searchList.map((item, index) => {
+                { search && search.length > 0 &&
+                    search.map((item, index) => {
                         return <ListItem 
                                 key = {index}
                                 index = {index}

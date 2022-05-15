@@ -8,8 +8,10 @@ import {BiShuffle,
         BiSkipPrevious, 
         BiRepeat,
         BiPlay,
-        BiPause
+        BiPause,
+        BiVolumeFull
     } from "react-icons/bi";
+import {FaExclamation} from "react-icons/fa"
 
 
 function MPLeft({trackDetails, uriToPlay}){
@@ -22,8 +24,6 @@ function MPLeft({trackDetails, uriToPlay}){
             const artists = track[0].artists.reduce((accum, artist) => {
                 return [...accum, artist.name]
             }, [])
-            console.log("track", track)
-            console.log("artists", artists)
             setTitle(track[0].name)
             setImgSrc(track[0].image)
             if(artists){
@@ -52,7 +52,8 @@ export default function MusicPlayer(props){
     /* gets Value from Context */
     const {
         musicPlayer,
-        dispatch
+        dispatch,
+        user
     } = useContext(AppContext);
     const [play, setPlay] = useState(false);
 
@@ -61,22 +62,49 @@ export default function MusicPlayer(props){
     const [playerState, setPlayerState] = useState(null)
     const [previousTracks, setPreviousaTracks] = useState([]);
     const [trackDetails,setTrackDetails] = useState(null)// array
+    const [playerVolume, setPlayerVolume] = useState(1);
+    const [playNotAllowed, setPlayNotAllowed] = useState(true)
 
     useEffect(() => {
         if(musicPlayer){
-            console.log("musicPlayer", musicPlayer)
-            if(musicPlayer.setPlay === "play"){
-
+            if(user && (!user.product || user.product === "open")){
+                setPlayNotAllowed(true)
+                // pausing always
+                // clearing the current playing uri to null
+                const payload = {
+                    ...musicPlayer,
+                    currentTrackUri: null,
+                    currentPosition: null,
+                    setPlay: "pause"   
+                }
+                // updating the musicplayerObject
+                dispatch({type:"SET_MUSICPLAYER", payload: payload})
+            }
+            if(musicPlayer.setPlay === "play" && user && user.product && user.product !=="open"){
+                // if(user && user.product && user.product !== "premium"){
+                //     setPlayNotAllowed(true)
+                //     return
+                // }
+                setPlayNotAllowed(false)
                 if(musicPlayer.trackDetails){
                     setTrackDetails(musicPlayer.trackDetails)
+                    // set the images of the song at leas
                 }
+               
                 if(play){
                     setPlay(false)
                 }
                 playHandler();
             }
+
+            if(musicPlayer.setPlay === "pause" && user && user.product && user.product !== "open"){
+                // pausing
+                setPlayNotAllowed(false)
+                pauseHandler()
+            }
         }
-    }, [musicPlayer])
+        
+    }, [musicPlayer, user])
     /* METHODS */
     function playHandler(e){
         /* passing song to play */
@@ -85,15 +113,29 @@ export default function MusicPlayer(props){
         /* for now just Current song URI */
         /* IF it is playing, keep Playing */
         //if(play) return null
-        const urisArray = musicPlayer.uris;
-        setUriToPlay([urisArray[musicPlayer.currentPosition]])
-        setPlay(true)
-
+        if(musicPlayer){
+            const urisArray = musicPlayer.uris;
+            setUriToPlay([urisArray[musicPlayer.currentPosition]])
+        }
+        if(musicPlayer && musicPlayer.setPlay ==="pause"){
+            const _payload = {
+                ...musicPlayer,
+                setPlay: "play"
+            }
+            dispatch({type:"SET_MUSICPLAYER", payload: _payload})
+        }
 
     }
 
     function pauseHandler(e){
-       setPlay(false)
+        if(musicPlayer && musicPlayer.setPlay ==="play"){
+            const _payload = {
+                ...musicPlayer,
+                setPlay: "pause"
+            }
+            dispatch({type:"SET_MUSICPLAYER", payload: _payload})
+        }
+       //setPlay(false)
     }
 
     function playNext(e){
@@ -109,12 +151,11 @@ export default function MusicPlayer(props){
             // setting the track to play
             const payload = {
                 ...musicPlayer,
-                currentTrackUri: uriToPlay,  
+                currentTrackUri: uriToPlay[0],  
+                setPlay: "play" 
             }
-            console.log("MusicPlayerBefore", musicPlayer)
             // updating the musicplayerObject
             dispatch({type:"SET_MUSICPLAYER", payload: payload})
-            console.log("after", musicPlayer)
             return 
         }
 
@@ -131,12 +172,14 @@ export default function MusicPlayer(props){
         const payload = {
             ...musicPlayer,
             currentTrackUri: musicPlayer.uris[newCurrentPosition],
-            currentPosition: newCurrentPosition    
+            currentPosition: newCurrentPosition,
+            setPlay: "play"   
         }
-        console.log("MusicPlayerBefore", musicPlayer)
         // updating the musicplayerObject
         dispatch({type:"SET_MUSICPLAYER", payload: payload})
-        console.log("after", musicPlayer)
+
+        // call playhandler
+        playHandler();
         
 
     }
@@ -155,12 +198,13 @@ export default function MusicPlayer(props){
             // setPlay(true)
             const payload = {
                 ...musicPlayer,
-                currentTrackUri: uriToPlay,  
+                currentTrackUri: uriToPlay[0], 
+                setPlay: "play"    
             }
-            console.log("MusicPlayerBefore", musicPlayer)
+            //console.log("MusicPlayerBefore", musicPlayer)
             // updating the musicplayerObject
             dispatch({type:"SET_MUSICPLAYER", payload: payload})
-            console.log("after", musicPlayer)
+            //console.log("after", musicPlayer)
             return 
         }
 
@@ -177,12 +221,15 @@ export default function MusicPlayer(props){
         const payload = {
             ...musicPlayer,
             currentTrackUri: musicPlayer.uris[newCurrentPosition],
-            currentPosition: newCurrentPosition    
+            currentPosition: newCurrentPosition,
+            setPlay: "play"    
         }
-        console.log("MusicPlayerAfter", musicPlayer)
         // updating the musicplayerObject
         dispatch({type:"SET_MUSICPLAYER", payload: payload})
-        console.log("after", musicPlayer)
+    }
+
+    function volumeHandler(e){
+        setPlayerVolume(1);
     }
     if(!props.token) return
     if(!musicPlayer) return
@@ -190,17 +237,36 @@ export default function MusicPlayer(props){
 
     return(
         <div className = "MP_Container">
-            {/* Actual Hidden player */}
+                {/*IFNOT PREMIUM */}
+                {   playNotAllowed &&
+                        <div className="NP_NotPremium">
+                            <div className="NP_icons">
+                                <FaExclamation/>
+                            </div>
+                            <p className = "NP_InformText">
+                                Playback for premium users only
+                            </p>
+                            <button 
+                                onClick={(e) => {
+                                    window.open("https://developer.spotify.com/documentation/web-playback-sdk/", '_blank')
+                                }}
+                            >
+                                Learn more
+                            </button>
+                        </div>
 
+                }
+                {/* Actual Hidden player */}
                 <div className = "MP_hiddenPlayer">
                     <SpotifyPlayer 
                         autoPlay = {false}
-                        play = {play}
+                        play = {musicPlayer && musicPlayer.setPlay==="play" ? true  : false}
                         token = {props.token ? props.token : null}
                         uris = {uriToPlay}
+                        //initialVolume = {volume.toString()}
+                        volume = {playerVolume}
                         callback = {(state) => {
                            if(state && state.previousTracks.length > 0){
-                               console.log("state", state)
                                const _playerState = {
                                     previousTrack: state.previousTracks,
                                     position: state.position, 
@@ -224,9 +290,9 @@ export default function MusicPlayer(props){
                            }
                         }}
                         styles={{
-                            activeColor: '#fff',
+                            activeColor: '#000',
                             bgColor: '#333',
-                            color: '#202020',
+                            color: 'none',
                             loaderColor: '#fff',
                             sliderColor: '#1cb954',
                             trackArtistColor: '#ccc',
@@ -235,7 +301,6 @@ export default function MusicPlayer(props){
                         }}
                     />
                 </div>
-
                 <div className = "MP_actualPlayer">
                     <div className = "MP_left">
                         <MPLeft 
@@ -257,13 +322,13 @@ export default function MusicPlayer(props){
                         </li>  
                         <li className = "MP_playBTN">
 
-                            {musicPlayer && play &&
+                            {musicPlayer && musicPlayer.setPlay==="play" &&
                             <button 
                                 onClick = {(e) => pauseHandler(e)}>
                                 <BiPause fill = {"#000"}/>
                             </button>}
 
-                            {musicPlayer && !play &&
+                            {musicPlayer && musicPlayer.setPlay === "pause" &&
                             <button 
                                 onClick = {(e) => playHandler(e)}>
                                 <BiPlay fill = {"#000"}/>
@@ -288,8 +353,25 @@ export default function MusicPlayer(props){
                 </ul>
 
                 <div className = "MP_right">
-                    <button className = "MP_volumeBTN">
-                    </button>
+
+                    <div className = "MP_RHideFix MP_R1"></div>
+                    <div className = "MP_RHideFix MP_R1"></div>
+
+                    <div className = "MP_RVolumeIcon">
+                        <BiVolumeFull/>
+                    </div>
+                    <div className = "MP_RInputDIV">
+                        <input 
+                            disabled= {true}
+                            id = "inputVolume"
+                            type = "range"
+                            min= {0}
+                            step = {0.05}
+                            max = {1}
+                            value = {playerVolume}
+                            onChange = {e => volumeHandler(e)}
+                        />
+                    </div>
                 </div>  
             </div>        
 

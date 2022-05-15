@@ -1,8 +1,12 @@
-import { Link } from "react-router-dom"
+import { Link, NavLink } from "react-router-dom"
 export default function NavPlaylist({item}){
     return(
         <li>
-            <Link to ={`/app/playlist/${item.id}`}>{item.name}</Link>
+            <NavLink 
+                to ={`/app/playlist/${item.id}`}
+                className = {({isActive}) => isActive ? "MA_plaulistA_Active" : ""}>
+                    {item.name}
+            </NavLink>
         </li>
     )
 }

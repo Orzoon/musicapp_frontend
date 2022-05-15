@@ -17,7 +17,6 @@ function Login(){
     //useEffect
     useEffect(()=> {
         const logggedIn = checkAuth();
-   
         // if(logggedIn){
         //     window.location.href = "/app" 
         // }
