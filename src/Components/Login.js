@@ -1,4 +1,5 @@
-import React,{useEffect} from "react";
+import React,{useEffect, useRef, useState} from "react";
+import {useNavigate} from "react-router-dom"
 
 
 // importing styles
@@ -7,67 +8,251 @@ import "../styles/login.scss"
 // importing helper functions
 import { 
     loginAuth,
-    checkAuth
+    checkAuth,
+    setCookie,
+    getCookie
  } from "../helper";
+
+ // importing icons
+ import {
+    BassonSVG,
+    DvdcaseSVG,
+    HeadphoneSVG,
+    MikeSVG,
+    MusicnoteSVG,
+    DrumSVG,
+    GuitarSVG
+ } from "../subComponents/svg";
+
+ import {FaExclamation} from "react-icons/fa"
+ import {MdClose} from "react-icons/md"
 
 
 const AuthLink = loginAuth();
 function Login(){
-
+    const [showModal, setShowModal] = useState(null);
+    const modalRef = useRef();
+    const btnRef = useRef();
+    const navigate = useNavigate();
+    const [loading,setLoading] = useState(true)
     //useEffect
     useEffect(()=> {
-        const logggedIn = checkAuth();
-        // if(logggedIn){
-        //     window.location.href = "/app" 
-        // }
-        // checking the url and getting the code from the link
-        const currentLoginUrl = window.location.href;
-        const splittedURL = currentLoginUrl.split("=")
-        let secondSplit;
-        if(splittedURL.length > 2){
-            secondSplit = splittedURL[1].split("&")[0]
-            console.log("secondSplit", secondSplit)
+        // setting loading
+        // deleting the cookie--for test
+        if(window.location.href.split("#")[1] === "logout"){
+            console.log("here at login")
+            document.cookie = "MusicAppToken=; max-age=0";
+            //setCookie("MusicAppToken", "vasue", 0)
+            window.history.pushState("", document.title, window.location.pathname
+            + window.location.search);
         }
-        // if(splittedURL.length === 2){
-        //     localStorage.setItem("MusicAppLoginStatus", true)
-        //     localStorage.setItem("mucisAppUserCode", splittedURL[1])
-        // }
+        const tokenExists = checkAuth();
+        // second to login
+        if(tokenExists){
+            //----- to the app
+            navigate("/app/home")
+        }
+        else {
+            // check the url------------>
+            const currentLoginUrl = window.location.href;
+            const splittedURL = currentLoginUrl.split("#")
+            if(splittedURL.length > 1){
+                const _tokenPart = splittedURL[1].split("&");
+                if(_tokenPart.length === 3){
+                   const nameValues = _tokenPart.map(item => {
+                       return item.split("=")[0]
+                   })
+                   const nameValuesAllowed = ["access_token", "token_type", "expires_in"]
+                   const matches = nameValues.every(item => nameValuesAllowed.includes((item)))
+                   
+                   /*********************************/
+                   if(matches){
+                        const Values = _tokenPart.map(item => {
+                            return item.split("=")[1]
+                        })
+                        setCookie("MusicAppToken", Values[0], parseInt(Values[2]))
+                        // clearing the url
+                        window.history.pushState("", document.title, window.location.pathname
+                                                       + window.location.search);
 
-        // redirecting to the MainApp
-        //window.location.href = "/app" 
-    }, []);
+                        // to app
+                
+                        navigate("/app/home")
+                         
+                   }else{
+                    setLoading(false)
+                   }
+                }
+            }
+
+            window.addEventListener("click", modalOutsideClickHandler)
+            setLoading(false)
+        }
+
+
+        return (() => window.removeEventListener("click", modalOutsideClickHandler))
+    }, [loading]);
+
+
     
     // button auth to spotify
     function AuthLinkhandler(e){
         e.preventDefault();
         window.location.href= AuthLink
-
     }
+
+    function modalOutsideClickHandler(e){
+        if(btnRef && btnRef.current && btnRef.current.contains(e.target)){
+            return
+        }
+        if(modalRef && modalRef.current && !modalRef.current.contains(e.target)){
+
+                setShowModal(false)
+                
+        }
+    }
+    if(loading) return null
     return(
         <div className="mainContainer">
-            <div className = "L_subContainer">
-                <div className= "L_imageContainer">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
-                            viewBox="0 0 1333.33 1333.3" 
-                        shapeRendering="geometricPrecision" 
-                        textRendering="geometricPrecision" 
-                        imageRendering="optimizeQuality" 
-                        fillRule="evenodd" clipRule="evenodd">
-                            <path d="M666.66 0C298.48 0 0 298.47 0 666.65c0 368.19 298.48 666.65 666.66 666.65 368.22 0 666.67-298.45 666.67-666.65C1333.33 298.49 1034.88.03 666.65.03l.01-.04zm305.73 961.51c-11.94 19.58-37.57 25.8-57.16 13.77-156.52-95.61-353.57-117.26-585.63-64.24-22.36 5.09-44.65-8.92-49.75-31.29-5.12-22.37 8.84-44.66 31.26-49.75 253.95-58.02 471.78-33.04 647.51 74.35 19.59 12.02 25.8 37.57 13.77 57.16zm81.6-181.52c-15.05 24.45-47.05 32.17-71.49 17.13-179.2-110.15-452.35-142.05-664.31-77.7-27.49 8.3-56.52-7.19-64.86-34.63-8.28-27.49 7.22-56.46 34.66-64.82 242.11-73.46 543.1-37.88 748.89 88.58 24.44 15.05 32.16 47.05 17.12 71.46V780zm7.01-189.02c-214.87-127.62-569.36-139.35-774.5-77.09-32.94 9.99-67.78-8.6-77.76-41.55-9.98-32.96 8.6-67.77 41.56-77.78 235.49-71.49 626.96-57.68 874.34 89.18 29.69 17.59 39.41 55.85 21.81 85.44-17.52 29.63-55.89 39.4-85.42 21.8h-.03z" 
-                            fill="#ffffff" fillRule="nonzero"/>
-                    </svg>
 
-                    <button 
-                        onClick={(e)=> AuthLinkhandler(e)}
-                        className = "L_loginButton"
-                    >
-                            Login to spotify
-                    </button>
-                </div>
+            {/* <LoginHeader/> */}
+
+            {/* Everything position relative to the Parent */}
+            <div className = "_LWrapperContainer">
+
+                    <div className = "_LWhiteBG"></div>
+                    <div className = "_LBlackBG"></div>
+                    {/* TEXT_CONAINTER Z__9  */}
+                    <div className = "_LTextContainer">
+                        <div className = "_LPWrapper WrapperM">
+                            <div className = "_LPDiv LPS">
+                                <p>S</p>
+                            </div>
+                        </div>
+                        <div className = "_LPWrapper WrapperS">
+                            <div className = "_LPDiv LPM" >
+                                <p>M</p>
+                            </div>
+                        </div>
+                        <div className = "_LDivDiv"></div>
+                    </div>
+
+                    <div className = "_LSVGMainContainer">
+                        {/* SVG_______ICONS */}
+                        <div className = "_LSVGContainer icon1 ">
+                            <BassonSVG/>
+                        </div>
+                        <div className = "_LSVGContainer icon2">
+                            <DvdcaseSVG/>
+                        </div>
+                        <div className = "_LSVGContainer icon3">
+                            <HeadphoneSVG/>
+                        </div>
+                        <div className = "_LSVGContainer icon4">
+                            <MikeSVG/>
+                        </div>
+                        <div className = "_LSVGContainer icon5">
+                            {/* <MusicnoteSVG/> */}
+                            <DrumSVG/>
+                        </div>
+                        <div className = "_LSVGContainer icon6">
+                            <GuitarSVG/>
+                        </div>
+                    </div>
+
+                    <div className = "_MainText">
+                            <div className = "textBox textBox1">
+                                <div className = "textCover textCover1">
+                                    <p>M</p>
+                                </div>
+                            </div>
+
+                            <div className = "textBox textBox2">
+                                <div className = "textCover textCover2">
+                                    <p>U</p>
+                                </div>
+                            </div>
+
+                            <div className = "textBox textBox3">
+                                <div className = "textCover textCover3">
+                                    <p className = "SCOLOR">S</p>
+                                </div>
+                            </div> 
+
+                            <div className = "textBox textBox4">
+                                <div className = "textCover textCover4">
+                                    <p className = "SCOLOR">I</p>
+                                </div>
+                            </div>
+
+                            <div className = "textBox textBox5">
+                                <div className = "textCover textCover5">
+                                    <p>F</p>
+                                </div>
+                            </div>
+
+                            <div className = "textBox textBox6">
+                                <div className = "textCover textCover6">
+                                    <p>Y</p>
+                                </div>
+                            </div>                           
+                            
+                    </div>
+                    
+                    <div className = "BtnContainer">
+                        <button
+                            onClick={(e) => AuthLinkhandler(e)} 
+                            className = "loginButton">
+                            Login
+                        </button>
+                        <div className="BtnLine lineTop"></div>
+                        <div className="BtnLine lineLeft"></div>
+                        <div className="BtnLine lineRight"></div>
+                        <div className="BtnLine lineBottom"></div>
+                    </div>
+
             </div>
+
+            <div className = "btnExclamation">
+                <button
+                    ref = {btnRef}
+                    onClick={(e) => setShowModal(true)} 
+                    className="btnExc">
+                    <FaExclamation/>
+                </button>
+                <div className="Btncircle">
+                    <div className = "BtnRipple"></div>
+                    <div className = "BtnRipple"></div>
+                </div>
+                {/* <div className="Btncircle circle2"></div>
+                <div className="Btncircle circle3"></div>
+                <div className="Btncircle circle4"></div> */}
+            </div>
+
+            {showModal && 
+                <div className = "LoginModalContainer">
+                        <div className = "L_modal" ref = {modalRef}>
+                            <h2>About</h2>
+                            <div className = "L_modalP">
+                                    <p><span className = "P_note">Spotify Login</span> is required to be able to display user data from their API. After finishing you will be redirected back </p>
+                                    <p><span className = "P_note">Note:</span><br/>
+                                        All the data accessed by this app <b>are not stored, used, or shared</b> to any external sources. The app code can be found <a href = "#">here</a>
+                                    </p>
+                                    <p>
+                                        Before logging in you are able to view all the information accessed, which is required by this app to work.
+                                    </p>
+                            </div>
+                            <button
+                                onClick={(e) => setShowModal(false)} 
+                                className="L_btnClose">
+                                <MdClose/>
+                            </button>
+                        </div>
+                </div>
+            }
+
         </div>
     )
 }
-
 
 export default Login;

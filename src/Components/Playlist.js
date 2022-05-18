@@ -80,8 +80,6 @@ export default function Playlist(){
         // closing the navopen
         setNavOpen(false)
         /* iF no playlistID */
-
-
         //---checking for musicPlayerFirst
         // --checking for likedsongs
         if(playlistID === "likedsongs" && user && likedSongs){
@@ -318,8 +316,8 @@ export default function Playlist(){
     },[])
 
     useEffect(() => {
-        
-    })
+        window.scrollTo(0,0);
+    }, [playlistID])
     
     /* ADD Tracks to PlayLIST */
     function addTrackToPlaylistHandler(trackUriID){
@@ -522,7 +520,7 @@ export default function Playlist(){
     }
 
     function outsideListClickFix(e){
-        if(playlistDIVRef && !playlistDIVRef.current.contains(e.target)){
+        if(playlistDIVRef && playlistDIVRef.current && !playlistDIVRef.current.contains(e.target)){
             setClickActiveListID(null)
         }
     }

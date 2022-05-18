@@ -3,7 +3,11 @@ import {Outlet, useNavigate, NavLink, useLocation } from "react-router-dom";
 //import SpotifyWebApi from "spotify-web-api-js";
 import appReducer, {InitialState} from "./appReducer";
 // context
-import { spotifyApi } from "./helper";
+import { 
+    spotifyApi,
+    getCookie,
+    setCookie
+ } from "./helper";
 import { AppContext } from "./context";
 // importing loader
 import {MainAppLoader} from "./subComponents/loader"
@@ -27,8 +31,6 @@ import {AiOutlinePlus} from "react-icons/ai"
 
 // importing the styles
 import "./styles/MainApp.scss";
-
-const _token = "BQAkFDIemX8hPtaKj6565NJyprl4e9d-sAJseS1kXkmQF3D46UANhEoaqRgnWcvRvtUKEsDwD5dpbblKqdoOpOtjHp1tz4OEWgz5xGd0W9L3a9XRP7dGy-4a6vOAt45tAoFq61vHcxJ-XWR9J00HwHjPxqI_rpK5bW8X_lUjk0_Lu43Ph6r30ZTA6lqmiUrNLfO9Fo4sFyPZruRhtXzEKspxx-UgeXXiz60jw19jzgk-5SC0ttPII0p9lbqKAMZUO3tfkKpOls6fRdWkaT_S6cqRgjcK_cGyP9Gf1L9o5pI";
 
 
 export default function MainApp(){
@@ -61,11 +63,13 @@ export default function MainApp(){
     useEffect(() => {
         // checking for the cookies and the token
 
-
+        const _cookieToken = getCookie("MusicAppToken")
         //closing the nav on the click
-        setToken(_token)
-        if(token){
-            spotifyApi.setAccessToken(_token)
+        if(_cookieToken){
+            setToken(_cookieToken.trim())
+        }
+        if(_cookieToken){
+            spotifyApi.setAccessToken(_cookieToken)
             //getting user
             spotifyApi.getMe().then(user => {
                 dispatch({type:"SET_USER", payload: user})
@@ -239,8 +243,11 @@ export default function MainApp(){
 
             
         }
+        else{
+            navigate("/")
+        }
        
-    },  [token])
+    },  [])
 
     useEffect(() => {
         const dataToBeChecked = [
@@ -269,6 +276,14 @@ export default function MainApp(){
     //--> NOTE
     /*shift this to nav*/
     useEffect(() => {
+        const _tokenCheck = getCookie("MusicAppToken");
+        console.log("tokenCheck", _tokenCheck)
+        if(!_tokenCheck){
+            setCookie("MusicAppToken", "value", 0)
+            document.cookie = "MusicAppToken=; max-age=0";
+            navigate("/")
+        }
+        console.log("me")
         document.addEventListener("click", navOutSideClickHandler)
         return () => document.removeEventListener("click", navOutSideClickHandler)
     })
@@ -341,6 +356,16 @@ export default function MainApp(){
     }
 
     function logoutHandler(){
+        const _cookie = getCookie("MusicAppToken");
+        if(_cookie){
+            //document.cookie = "MusicAppToken=; max-age=0";
+            //setCookie("MusciAppToken", "value", 0)
+            setLogout(false)
+            navigate("/#logout")
+        }
+        else{
+            navigate("/")
+        }
     }
     if(loading){
         return <MainAppLoader/>

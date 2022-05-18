@@ -35,13 +35,45 @@ function loginAuth(){
 
 
 function checkAuth(){
-    // returns true
-    // if(window.localStorage.getItem("musicAppUserCode")){
-    //     console.log(window.localStorage.getItem("musicAppUserCode"))
-    //     return true
-    // }
-    // return false
+    const gettingTokenCookie = getCookie("MusicAppToken");
+    if(gettingTokenCookie){
+        return true
+    }
+    else {
+        return false
+    }
+}
+
+
+function setCookie(name, value, secondsToLive) {
+    // Encode value in order to escape semicolons, commas, and whitespace
+    var cookie = name + "=" + encodeURIComponent(value);
+    if(typeof secondsToLive === "number") {
+        /* Sets the max-age attribute so that the cookie expires
+        after the specified number of days */
+        cookie += "; max-age=" + (secondsToLive);
+        document.cookie = cookie;
+    }
+}
+
+function getCookie(name) {
+    // Split cookie string and get all individual name=value pairs in an array
+    var cookieArr = document.cookie.split(";");
     
+    // Loop through the array elements
+    for(var i = 0; i < cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+        
+        /* Removing whitespace at the beginning of the cookie name
+        and compare it with the given string */
+        if(name == cookiePair[0].trim()) {
+            // Decode the cookie value and return
+            return decodeURIComponent(cookiePair[1]);
+        }
+    }
+    
+    // Return null if not found
+    return null;
 }
 
 
@@ -89,5 +121,7 @@ export {
     checkAuth,
     spotifyApi,
     milliSecondToTime,
-    debounceHelper
+    debounceHelper,
+    setCookie,
+    getCookie
 }
