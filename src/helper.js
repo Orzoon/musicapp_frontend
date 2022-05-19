@@ -23,6 +23,7 @@ const scopes = [
     "user-read-private",
     "playlist-modify-private"
   ];
+  //https://orzoon-music-app.netlify.app
 
 
 const spotifyApi = new SpotifyWebApi();
