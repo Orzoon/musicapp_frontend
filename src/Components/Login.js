@@ -10,7 +10,8 @@ import {
     loginAuth,
     checkAuth,
     setCookie,
-    getCookie
+    getCookie,
+    deleteCookie
  } from "../helper";
 
  // importing icons
@@ -34,29 +35,33 @@ function Login(){
     const modalRef = useRef();
     const btnRef = useRef();
     const navigate = useNavigate();
-    const [loading,setLoading] = useState(true)
+    const [loading,setLoading] = useState(true);
     //useEffect
     useEffect(()=> {
         // setting loading
         // deleting the cookie--for test
         if(window.location.href.split("#")[1] === "logout"){
-            console.log("here at login")
-            document.cookie = "MusicAppToken=; max-age=0";
-            //setCookie("MusicAppToken", "vasue", 0)
             window.history.pushState("", document.title, window.location.pathname
             + window.location.search);
+            deleteCookie()
+            setCookie("LoggedIn","false", 0)
         }
-        const tokenExists = checkAuth();
         // second to login
-        if(tokenExists){
             //----- to the app
-            navigate("/app/home")
+        const _loggedStatus = getCookie("LoggedIn");
+        console.log("loggedStatus", _loggedStatus)
+        if(_loggedStatus && _loggedStatus === "true"){
+            const tokenExists = checkAuth();
+            if(tokenExists){
+                navigate("/app/home")
+            }
         }
         else {
             // check the url------------>
             const currentLoginUrl = window.location.href;
             const splittedURL = currentLoginUrl.split("#")
             if(splittedURL.length > 1){
+                console.log("Fourth")
                 const _tokenPart = splittedURL[1].split("&");
                 if(_tokenPart.length === 3){
                    const nameValues = _tokenPart.map(item => {
@@ -70,6 +75,9 @@ function Login(){
                         const Values = _tokenPart.map(item => {
                             return item.split("=")[1]
                         })
+
+                        //-----setting two variables
+                        setCookie("LoggedIn", "true", parseInt(Values[2]))
                         setCookie("MusicAppToken", Values[0], parseInt(Values[2]))
                         // clearing the url
                         window.history.pushState("", document.title, window.location.pathname
@@ -91,13 +99,20 @@ function Login(){
 
 
         return (() => window.removeEventListener("click", modalOutsideClickHandler))
-    }, [loading]);
+    }, [loading, navigate]);
 
+    useEffect(() => {
+        if(!loading){
+            setTimeout(() => {
+                setShowModal(true)
+            }, 5700)
+        }
+    }, [loading])
 
     
     // button auth to spotify
     function AuthLinkhandler(e){
-        e.preventDefault();
+        e.preventDefault();  
         window.location.href= AuthLink
     }
 
@@ -236,7 +251,7 @@ function Login(){
                             <div className = "L_modalP">
                                     <p><span className = "P_note">Spotify Login</span> is required to be able to display user data from their API. After finishing you will be redirected back </p>
                                     <p><span className = "P_note">Note:</span><br/>
-                                        All the data accessed by this app <b>are not stored, used, or shared</b> to any external sources. The app code can be found <a href = "#">here</a>
+                                        All the data accessed by this app <b>are not stored, used, or shared</b> to any external sources. The app code can be found <a href = "https://github.com/Orzoon/musicapp_frontend" target = "_blank" rel="noreferrer">here</a>
                                     </p>
                                     <p>
                                         Before logging in you are able to view all the information accessed, which is required by this app to work.

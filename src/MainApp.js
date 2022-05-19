@@ -6,7 +6,8 @@ import appReducer, {InitialState} from "./appReducer";
 import { 
     spotifyApi,
     getCookie,
-    setCookie
+    setCookie,
+    deleteCookie
  } from "./helper";
 import { AppContext } from "./context";
 // importing loader
@@ -62,13 +63,13 @@ export default function MainApp(){
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         // checking for the cookies and the token
-
         const _cookieToken = getCookie("MusicAppToken")
+        const _loggedIn = getCookie("LoggedIn");
         //closing the nav on the click
-        if(_cookieToken){
+        if(_cookieToken && _loggedIn && _loggedIn === "true"){
             setToken(_cookieToken.trim())
         }
-        if(_cookieToken){
+        if(_cookieToken && _loggedIn && _loggedIn === "true" ){
             spotifyApi.setAccessToken(_cookieToken)
             //getting user
             spotifyApi.getMe().then(user => {
@@ -245,9 +246,10 @@ export default function MainApp(){
         }
         else{
             navigate("/")
+            console.log("hrere at mainApp")
         }
        
-    },  [])
+    }, [])
 
     useEffect(() => {
         const dataToBeChecked = [
@@ -276,14 +278,10 @@ export default function MainApp(){
     //--> NOTE
     /*shift this to nav*/
     useEffect(() => {
-        const _tokenCheck = getCookie("MusicAppToken");
-        console.log("tokenCheck", _tokenCheck)
-        if(!_tokenCheck){
-            setCookie("MusicAppToken", "value", 0)
-            document.cookie = "MusicAppToken=; max-age=0";
-            navigate("/")
+        const _loggedIn = getCookie("LoggedIn");
+        if(_loggedIn && _loggedIn !=="true"){
+            navigate("/#logout")
         }
-        console.log("me")
         document.addEventListener("click", navOutSideClickHandler)
         return () => document.removeEventListener("click", navOutSideClickHandler)
     })
@@ -356,16 +354,8 @@ export default function MainApp(){
     }
 
     function logoutHandler(){
-        const _cookie = getCookie("MusicAppToken");
-        if(_cookie){
-            //document.cookie = "MusicAppToken=; max-age=0";
-            //setCookie("MusciAppToken", "value", 0)
-            setLogout(false)
-            navigate("/#logout")
-        }
-        else{
-            navigate("/")
-        }
+        setCookie("LoggedIn", "false", 0)
+        navigate("/#logout")
     }
     if(loading){
         return <MainAppLoader/>
@@ -377,10 +367,12 @@ export default function MainApp(){
                     {/* --LOGO_textContainer--- */}
                     <div className = "MA_logoTextContainer">
                         <div className= "MA_logoContainer">
+                            <h3>M<span>s</span></h3>
                             <FaSpotify size={42}/>
                         </div>   
                         <p className = "MA_logoText">
-                            Spotify
+                            {/* Spotify */}
+                            Musify
                         </p>
                     </div>
 
@@ -529,10 +521,12 @@ export default function MainApp(){
                     <div className = "MA_navTopDiv">
                         <div className = "MA_logoTextContainer">
                             <div className= "MA_logoContainer">
+                                <h3>M<span>s</span></h3>
                                 <FaSpotify size={42}/>
                             </div>   
                             <p className = "MA_logoText">
-                                Spotify
+                                {/* Spotify */}
+                                Musify
                             </p>
                         </div>
                     </div>

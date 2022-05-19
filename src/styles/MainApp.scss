@@ -75,8 +75,24 @@ $hoverbgColor: #282828;
             width: 36px;
             //border: 1px solid red;
             @include GridParentCentering;
+            justify-items: center;
+            align-items: center;
+            background: #fff;
+            border-radius: 50%;
+            background: linear-gradient(to right, #E31BFD,#47084f);
+            background: #fff;
+            & h3 {
+                font-size: 14px;
+                color: #000;
+                //color: #fff;
+                //color: #E31BFD;
 
+                & span {
+                    color: #E31BFD;
+                }
+            }
             & svg {
+                display: none;
                 height: 100%;
                 width: 100%;
             }
@@ -959,9 +975,28 @@ $hoverbgColor: #282828;
                 align-self: end;
                 align-items: center;
                 justify-items: center;
-        
+                
                 & .MA_logoContainer{
+                    height: 45px;
+                    width: 45px;
                     @include GridParentCentering;
+                    background: #fff;
+                    border-radius: 50%;
+
+                    & h3 {
+                        font-size: 18px;
+                        color: #000;
+                        //color: #fff;
+                        //color: #E31BFD;
+        
+                        & span {
+                            color: #E31BFD;
+                        }
+                    }
+                    
+                    & svg {
+                        display: none;
+                    }
                 }
                 & .MA_logoText{
                     font-weight: 700;

@@ -374,6 +374,7 @@ div.LoginModalContainer{
         grid-template-rows: auto 255px;
         grid-row-gap: 15px;
         border-radius: 8px;
+        transform: all 1s ease-in;
         & h2 {
             font-size: 20px;
             height: 100%;
@@ -429,6 +430,7 @@ div.LoginModalContainer{
     }
     
 }
+
 
 $BtnLineHeight: 2px;
 $lineAnimationDuration: 0.8s;
